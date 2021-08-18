@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/bianjieai/irita-sdk-go/types"
-	opb "github.com/bianjieai/opb-sdk-go/internal/app/sdk"
-	"github.com/bianjieai/opb-sdk-go/internal/app/sdk/model"
+	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 )
 
 func main() {

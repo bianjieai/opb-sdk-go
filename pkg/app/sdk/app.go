@@ -3,7 +3,7 @@ package sdk
 import (
 	iritasdk "github.com/bianjieai/irita-sdk-go"
 	"github.com/bianjieai/irita-sdk-go/types"
-	"github.com/bianjieai/opb-sdk-go/internal/app/sdk/model"
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"google.golang.org/grpc"
 )
 
