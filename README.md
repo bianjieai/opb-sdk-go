@@ -1,2 +1,3 @@
-# opb-sdk-go
-Golang SDK for IRITA OPB
+# OPB SDK GO
+
+IRITA 开放联盟链 SDK（Golang）
