@@ -11,7 +11,7 @@ import (
 func main() {
 
 	// 初始化 SDK 配置
-	cfg, err := types.NewClientConfig("http://localhost:26657", "tcp://localhost:26657", "localhost:9090", "testing")
+	cfg, err := types.NewClientConfig("http://localhost:26657", "ws://localhost:26657", "localhost:9090", "testing")
 	if err != nil {
 		panic(err)
 	}
