@@ -25,3 +25,15 @@ func (a *AuthToken) GetRequestMetadata(context.Context, ...string) (
 func (a *AuthToken) RequireTransportSecurity() bool {
 	return false
 }
+
+func (a *AuthToken) GetProjectKey() string {
+	return a.projectKey
+}
+
+func (a *AuthToken) GetProjectID() string {
+	return a.projectID
+}
+
+func (a *AuthToken) GetChainAccountAddr() string {
+	return a.chainAccountAddr
+}
