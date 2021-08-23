@@ -15,8 +15,8 @@ replace (
 )
 
 require (
-	github.com/bianjieai/irita-sdk-go v1.1.1-0.20210823060403-21299373f441
-	github.com/bianjieai/opb-sdk-go v0.0.0-20210823060915-e85cde344f05
+	github.com/bianjieai/irita-sdk-go v1.1.1-0.20210823135704-f8e5b446eb00
+	github.com/bianjieai/opb-sdk-go v0.0.0-20210823140456-5bb465237893
 )
 ```
 
