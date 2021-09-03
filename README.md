@@ -41,7 +41,7 @@ func main()  {
 		panic(err)
 	}
 
-	// 初始化 OPB 网关账号
+	// 初始化 OPB 网关账号（测试环境设置为 nil 即可）
 	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
 
 	// 创建 OPB 客户端
