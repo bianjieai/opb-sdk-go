@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/bianjieai/irita-sdk-go/modules/nft"
 	"github.com/bianjieai/irita-sdk-go/types"
 	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
@@ -11,12 +12,12 @@ import (
 func main() {
 
 	// 初始化 SDK 配置
-	cfg, err := types.NewClientConfig("http://localhost:26657", "ws://localhost:26657", "localhost:9090", "testing")
+	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "ws://47.100.192.234:26657", "47.100.192.234:9090", "testing")
 	if err != nil {
 		panic(err)
 	}
 
-	// 初始化 OPB 网关账号
+	// 初始化 OPB 网关账号（测试网环境设置为 nil 即可）
 	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
 
 	// 创建 OPB 客户端
@@ -34,17 +35,21 @@ func main() {
 		Mode:     types.Commit,    // Tx 广播模式
 	}
 
-	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：发行 NFT 类别
-	result, err := client.Bank.Send("iaa1lxvmp9h0v0dhzetmhstrmw3ecpplp5tljnr35f", types.NewDecCoins(types.NewDecCoin("uirita", types.NewInt(100))), baseTx)
+	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：创建 NFT 类别
+	result, err := client.NFT.IssueDenom(nft.IssueDenomRequest{ID: "testdenom", Name: "TestDenom", Schema: "{}"}, baseTx)
 	if err != nil {
-		fmt.Errorf("转账失败: %s", err.Error())
+		fmt.Println(fmt.Errorf("NFT 类别创建失败: %s", err.Error()))
 	} else {
-		fmt.Println("转账成功：", result.Hash)
+		fmt.Println("NFT 类别创建成功：", result.Hash)
 	}
 
 	// 使用 Client 选择对应的功能模块，查询链上状态；例：查询账户信息
-	acc, _ := client.Bank.QueryAccount("iaa1lxvmp9h0v0dhzetmhstrmw3ecpplp5tljnr35f")
-	fmt.Println("账户信息查询成功：", acc)
+	acc, err := client.Bank.QueryAccount("iaa1lxvmp9h0v0dhzetmhstrmw3ecpplp5tljnr35f")
+	if err != nil {
+		fmt.Println(fmt.Errorf("账户查询失败: %s", err.Error()))
+	} else {
+		fmt.Println("账户信息查询成功：", acc)
+	}
 
 	// 使用 Client 订阅事件通知，例：订阅区块
 	subs, err := client.SubscribeNewBlock(types.NewEventQueryBuilder(), func(block types.EventDataNewBlock) {
@@ -52,7 +57,7 @@ func main() {
 	})
 
 	if err != nil {
-		fmt.Errorf("区块订阅失败: %s", err.Error())
+		fmt.Println(fmt.Errorf("区块订阅失败: %s", err.Error()))
 	} else {
 		fmt.Println("区块订阅成功：", subs.ID)
 	}
