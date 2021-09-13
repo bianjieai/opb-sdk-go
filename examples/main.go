@@ -4,15 +4,20 @@ import (
 	"fmt"
 	"github.com/bianjieai/irita-sdk-go/modules/nft"
 	"github.com/bianjieai/irita-sdk-go/types"
+	"github.com/bianjieai/irita-sdk-go/types/store"
 	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"time"
 )
 
 func main() {
-
+	fee, _ := types.ParseCoin("100000uirita") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
 	// 初始化 SDK 配置
-	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "ws://47.100.192.234:26657", "47.100.192.234:9090", "testing")
+	options := []types.Option{
+		types.KeyDAOOption(store.NewMemory(nil)),
+		types.FeeOption(types.NewDecCoinsFromCoins(fee)),
+	}
+	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "ws://47.100.192.234:26657", "47.100.192.234:9090", "testing", options...)
 	if err != nil {
 		panic(err)
 	}
@@ -30,8 +35,8 @@ func main() {
 	baseTx := types.BaseTx{
 		From:     "test_key_name", // 对应上面导入的私钥名称
 		Password: "test_password", // 对应上面导入的私钥密码
-		Gas:      200000,		   // 单 Tx 消耗的 Gas 上限
-		Memo:     "",			   // Tx 备注
+		Gas:      200000,          // 单 Tx 消耗的 Gas 上限
+		Memo:     "",              // Tx 备注
 		Mode:     types.Commit,    // Tx 广播模式
 	}
 
