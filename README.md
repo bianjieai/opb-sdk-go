@@ -31,15 +31,20 @@ import (
 	"fmt"
 	"github.com/bianjieai/irita-sdk-go/modules/nft"
 	"github.com/bianjieai/irita-sdk-go/types"
+	"github.com/bianjieai/irita-sdk-go/types/store"
 	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"time"
 )
 
 func main() {
-
+	fee, _ := types.ParseCoin("100000uirita")  // 设置文昌链主网的默认费用，10W不够就填20W，30W....
 	// 初始化 SDK 配置
-	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "ws://47.100.192.234:26657", "47.100.192.234:9090", "testing")
+	options := []types.Option{
+		types.KeyDAOOption(store.NewMemory(nil)),
+		types.FeeOption(types.NewDecCoinsFromCoins(fee)),
+	}
+	cfg, err := types.NewClientConfig("https://opbt.bsngate.com:18602/api/b26b8b53e1b74aa6974ab207e25310f0/rpc", "wss://opbt.bsngate.com:18602/api/b26b8b53e1b74aa6974ab207e25310f0/ws", "opbt.bsngate.com:18603", "wenchangchain", options...)
 	if err != nil {
 		panic(err)
 	}
