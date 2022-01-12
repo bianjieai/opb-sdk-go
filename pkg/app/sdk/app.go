@@ -1,24 +1,106 @@
 package sdk
 
 import (
+	"crypto/x509"
+	"net/http"
+
 	iritasdk "github.com/bianjieai/irita-sdk-go"
 	"github.com/bianjieai/irita-sdk-go/types"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"google.golang.org/grpc"
-	"net/http"
+	"google.golang.org/grpc/credentials"
 )
+
+const certPEM = `-----BEGIN CERTIFICATE-----
+MIIF+jCCBOKgAwIBAgIQDSfXPnysyOm17yx8V7kJlzANBgkqhkiG9w0BAQsFADBZ
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMTMwMQYDVQQDEypS
+YXBpZFNTTCBUTFMgRFYgUlNBIE1peGVkIFNIQTI1NiAyMDIwIENBLTEwHhcNMjAw
+ODEwMDAwMDAwWhcNMjIwODE2MTIwMDAwWjAYMRYwFAYDVQQDDA0qLmJzbmdhdGUu
+Y29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArwePV9kZExoOtOHV
+QzBeGs52cTiAVquwAmfJOXvghtWUCfK73qUuN5e3W09SJX0Fr24Gv87M7zmNquND
+5JAdvMG3R5wHj7vcvf5tvnXWJTi/XPfxEYkjzgeiwkYAYuX7ThITOwpco9Re/aRK
+q0efbhGl7cVBycoNEUXLe3MVJxAJD3vVRnpqSgGvFyZs+ENUKr4umhWIY52q+GA3
+wg98xmToogqUhed0ovt9eJAkScFLh2n5WTmpXjOQPNhlgZHXc15U++utnr4fZIEl
+lN8wJAFFaQatWinJZ8on94FFIOKVd62pr385nY21eNZ4nomuPH5lNAA+B7Klz0SB
+IBgmYwIDAQABo4IC/TCCAvkwHwYDVR0jBBgwFoAUpI3lvnx55HAjbS4pNK0jWNz1
+MX8wHQYDVR0OBBYEFHsH2YGFCufZBqEeq6ievX8t3x7oMCUGA1UdEQQeMByCDSou
+YnNuZ2F0ZS5jb22CC2JzbmdhdGUuY29tMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUE
+FjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwTAYDVR0gBEUwQzA3BglghkgBhv1sAQIw
+KjAoBggrBgEFBQcCARYcaHR0cHM6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAIBgZn
+gQwBAgEwgYUGCCsGAQUFBwEBBHkwdzAkBggrBgEFBQcwAYYYaHR0cDovL29jc3Au
+ZGlnaWNlcnQuY29tME8GCCsGAQUFBzAChkNodHRwOi8vY2FjZXJ0cy5kaWdpY2Vy
+dC5jb20vUmFwaWRTU0xUTFNEVlJTQU1peGVkU0hBMjU2MjAyMENBLTEuY3J0MAkG
+A1UdEwQCMAAwggF+BgorBgEEAdZ5AgQCBIIBbgSCAWoBaAB2ACl5vvCeOTkh8FZz
+n2Old+W+V32cYAr4+U1dJlwlXceEAAABc9bpky0AAAQDAEcwRQIgD9RpZJqkN2I/
++iV8GNEZeM+2TAblJhNOBuqCK0DaSAgCIQDVSMV7DfVbYhICRM//pzUlK1PAilva
+4144zwnv8OkCHwB2ACJFRQdZVSRWlj+hL/H3bYbgIyZjrcBLf13Gg1xu4g8CAAAB
+c9bpk10AAAQDAEcwRQIgR6KYlSTLT0zscBw70j4rZhOtnlmm048KSWm6aRLC320C
+IQDSkQeUfiNWaNrheYZVlizk+FqvFTUGaC3DuZy+tLuNHAB2AFGjsPX9AXmcVm24
+N3iPDKR6zBsny/eeiEKaDf7UiwXlAAABc9bpk6YAAAQDAEcwRQIgGsqol0XBKzSW
+gVlsEAC/OIJAgip4eFbpeltafkhH/GwCIQDdzFIkxyV8wZ1GlBrIjaN/I+/V5a2h
+pF58ex/z/5b0cDANBgkqhkiG9w0BAQsFAAOCAQEAKR/g8wCtHbOAIRQt6Q7zFLhY
+czfoVdH3+JJN1KkNRaOOgMZSq738jZ/rP2BHXYRvzhhws/YhSxighqvZ+67gvAAr
+Yl/jPo/hFL4LgttH5AHf38QEWIoYNAp9bmCqWIwDYDPyBXUjsp2Ohn5IjGitKncs
+iUpBES9x5syHiz/2zYx+9rF33CEoUlbg51r86b/dyJyZOOtdbmh0EYjl+cqOahES
+tpXQ79Cf25pTFqswAnaR6tEqk3ZZDKVaCElZdSVVDL8g9/O5yG+fshanZdIhtdmj
++rfT8b3znKdunS9m6i8QC8Ik/F7BVu1saKqwgU5AoXv07bE4RRVngTYQASWT7A==
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIIFUTCCBDmgAwIBAgIQB5g2A63jmQghnKAMJ7yKbDANBgkqhkiG9w0BAQsFADBh
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3
+d3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBD
+QTAeFw0yMDA3MTYxMjI1MjdaFw0yMzA1MzEyMzU5NTlaMFkxCzAJBgNVBAYTAlVT
+MRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxMzAxBgNVBAMTKlJhcGlkU1NMIFRMUyBE
+ViBSU0EgTWl4ZWQgU0hBMjU2IDIwMjAgQ0EtMTCCASIwDQYJKoZIhvcNAQEBBQAD
+ggEPADCCAQoCggEBANpuQ1VVmXvZlaJmxGVYotAMFzoApohbJAeNpzN+49LbgkrM
+Lv2tblII8H43vN7UFumxV7lJdPwLP22qa0sV9cwCr6QZoGEobda+4pufG0aSfHQC
+QhulaqKpPcYYOPjTwgqJA84AFYj8l/IeQ8n01VyCurMIHA478ts2G6GGtEx0ucnE
+fV2QHUL64EC2yh7ybboo5v8nFWV4lx/xcfxoxkFTVnAIRgHrH2vUdOiV9slOix3z
+5KPs2rK2bbach8Sh5GSkgp2HRoS/my0tCq1vjyLJeP0aNwPd3rk5O8LiffLev9j+
+UKZo0tt0VvTLkdGmSN4h1mVY6DnGfOwp1C5SK0MCAwEAAaOCAgswggIHMB0GA1Ud
+DgQWBBSkjeW+fHnkcCNtLik0rSNY3PUxfzAfBgNVHSMEGDAWgBQD3lA1VtFMu2bw
+o+IbG8OXsj3RVTAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0lBBYwFAYIKwYBBQUHAwEG
+CCsGAQUFBwMCMBIGA1UdEwEB/wQIMAYBAf8CAQAwNAYIKwYBBQUHAQEEKDAmMCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5kaWdpY2VydC5jb20wewYDVR0fBHQwcjA3
+oDWgM4YxaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9v
+dENBLmNybDA3oDWgM4YxaHR0cDovL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0
+R2xvYmFsUm9vdENBLmNybDCBzgYDVR0gBIHGMIHDMIHABgRVHSAAMIG3MCgGCCsG
+AQUFBwIBFhxodHRwczovL3d3dy5kaWdpY2VydC5jb20vQ1BTMIGKBggrBgEFBQcC
+AjB+DHxBbnkgdXNlIG9mIHRoaXMgQ2VydGlmaWNhdGUgY29uc3RpdHV0ZXMgYWNj
+ZXB0YW5jZSBvZiB0aGUgUmVseWluZyBQYXJ0eSBBZ3JlZW1lbnQgbG9jYXRlZCBh
+dCBodHRwczovL3d3dy5kaWdpY2VydC5jb20vcnBhLXVhMA0GCSqGSIb3DQEBCwUA
+A4IBAQAi49xtSOuOygBycy50quCThG45xIdUAsQCaXFVRa9asPaB/jLINXJL3qV9
+J0Gh2bZM0k4yOMeAMZ57smP6JkcJihhOFlfQa18aljd+xNc6b+GX6oFcCHGr+gsE
+yPM8qvlKGxc5T5eHVzV6jpjpyzl6VEKpaxH6gdGVpQVgjkOR9yY9XAUlFnzlOCpq
+sm7r2ZUKpDfrhUnVzX2nSM15XSj48rVBBAnGJWkLPijlACd3sWFMVUiKRz1C5PZy
+el2l7J/W4d99KFLSYgoy5GDmARpwLc//fXfkr40nMY8ibCmxCsjXQTe0fJbtrrLL
+yWQlk9VDV296EI/kQOJNLVEkJ54P
+-----END CERTIFICATE-----
+`
 
 // NewClient create a new IRITA OPB client
 func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) iritasdk.IRITAClient {
 
 	httpHeader := http.Header{}
 	if authToken != nil {
-		// overwrite grpcOpts
-		grpcOpts := []grpc.DialOption {
-			grpc.WithInsecure(),
-			grpc.WithPerRPCCredentials(authToken),
+		if authToken.GetEnableTLS() {
+			roots := x509.NewCertPool()
+			roots.AppendCertsFromPEM([]byte(certPEM))
+			cert := credentials.NewClientTLSFromCert(roots, "bsngate.com")
+			// overwrite grpcOpts
+			grpcOpts := []grpc.DialOption{
+				grpc.WithPerRPCCredentials(authToken),
+				grpc.WithTransportCredentials(cert),
+			}
+			cfg.GRPCOptions = grpcOpts
+		} else {
+			// overwrite grpcOpts
+			grpcOpts := []grpc.DialOption{
+				grpc.WithInsecure(),
+				grpc.WithPerRPCCredentials(authToken),
+			}
+			cfg.GRPCOptions = grpcOpts
 		}
-		cfg.GRPCOptions = grpcOpts
 
 		if projectKey := authToken.GetProjectKey(); projectKey != "" {
 			httpHeader.Set("x-api-key", authToken.GetProjectKey())
