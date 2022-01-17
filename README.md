@@ -53,6 +53,8 @@ func main() {
 	// 初始化 OPB 网关账号（测试网环境设置为 nil 即可）
 	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
 
+	// 开启 TLS 连接
+	authToken.SetRequireTransportSecurity(true)
 	// 创建 OPB 客户端
 	client := opb.NewClient(cfg, &authToken)
 
