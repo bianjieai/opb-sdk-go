@@ -8,12 +8,11 @@ type AuthToken struct {
 	projectID        string
 	projectKey       string
 	chainAccountAddr string
+	enableTLS        bool
 }
 
 func NewAuthToken(projectID, projectKey, chainAccountAddr string) AuthToken {
-	return AuthToken{
-		projectID, projectKey, chainAccountAddr,
-	}
+	return AuthToken{projectID, projectKey, chainAccountAddr, true}
 }
 
 func (a *AuthToken) GetRequestMetadata(context.Context, ...string) (
@@ -23,7 +22,11 @@ func (a *AuthToken) GetRequestMetadata(context.Context, ...string) (
 }
 
 func (a *AuthToken) RequireTransportSecurity() bool {
-	return false
+	return a.enableTLS
+}
+
+func (a *AuthToken) SetRequireTransportSecurity(enabled bool) {
+	a.enableTLS = enabled
 }
 
 func (a *AuthToken) GetProjectKey() string {
@@ -36,4 +39,8 @@ func (a *AuthToken) GetProjectID() string {
 
 func (a *AuthToken) GetChainAccountAddr() string {
 	return a.chainAccountAddr
+}
+
+func (a *AuthToken) GetEnableTLS() bool {
+	return a.enableTLS
 }
