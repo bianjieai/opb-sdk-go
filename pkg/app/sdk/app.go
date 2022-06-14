@@ -4,9 +4,9 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
-	iritasdk "github.com/bianjieai/irita-sdk-go"
-	"github.com/bianjieai/irita-sdk-go/types"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
+	sdk "github.com/irisnet/core-sdk-go"
+	"github.com/irisnet/core-sdk-go/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"net/http"
@@ -14,17 +14,17 @@ import (
 )
 
 // NewClient create a new IRITA OPB client
-func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) iritasdk.IRITAClient {
+func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) sdk.Client {
 
 	httpHeader := http.Header{}
 	if authToken != nil {
 		if authToken.GetEnableTLS() {
-			certificateList,err := getGateWayTlsCertPool(cfg.RPCAddr)
+			certificateList, err := getGateWayTlsCertPool(cfg.RPCAddr)
 			if err != nil {
 				panic(err)
 			}
 			roots := x509.NewCertPool()
-			for i ,_ := range certificateList {
+			for i, _ := range certificateList {
 				roots.AddCert(certificateList[i])
 			}
 			cert := credentials.NewClientTLSFromCert(roots, "bsngate.com")
@@ -36,7 +36,7 @@ func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) iritasdk.IRIT
 			cfg.GRPCOptions = grpcOpts
 		} else {
 			// overwrite grpcOpts
-			grpcOpts := []grpc.DialOption {
+			grpcOpts := []grpc.DialOption{
 				grpc.WithInsecure(),
 				grpc.WithPerRPCCredentials(authToken),
 			}
@@ -48,13 +48,10 @@ func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) iritasdk.IRIT
 		}
 	}
 
-	cfg.RPCHeader = httpHeader
-	cfg.WSHeader = httpHeader
-
-	return iritasdk.NewIRITAClient(cfg)
+	return sdk.NewClient(cfg)
 }
 
-func getGateWayTlsCertPool(gateWayUrl string) ([]*x509.Certificate,error) {
+func getGateWayTlsCertPool(gateWayUrl string) ([]*x509.Certificate, error) {
 
 	if !strings.Contains(strings.ToLower(gateWayUrl), "https://") {
 		return nil, errors.New("tls is enabled, but the address is http")
