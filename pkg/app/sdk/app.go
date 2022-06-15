@@ -4,9 +4,10 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/client"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
-	sdk "github.com/irisnet/core-sdk-go"
 	"github.com/irisnet/core-sdk-go/types"
+	//sdk "github.com/irisnet/irismod-sdk-go/integration_test"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"net/http"
@@ -14,7 +15,7 @@ import (
 )
 
 // NewClient create a new IRITA OPB client
-func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) sdk.Client {
+func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) client.Client {
 
 	httpHeader := http.Header{}
 	if authToken != nil {
@@ -48,7 +49,7 @@ func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) sdk.Client {
 		}
 	}
 
-	return sdk.NewClient(cfg)
+	return client.NewClient(cfg)
 }
 
 func getGateWayTlsCertPool(gateWayUrl string) ([]*x509.Certificate, error) {
