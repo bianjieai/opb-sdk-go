@@ -7,7 +7,6 @@ import (
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/client"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"github.com/irisnet/core-sdk-go/types"
-	//sdk "github.com/irisnet/irismod-sdk-go/integration_test"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"net/http"
