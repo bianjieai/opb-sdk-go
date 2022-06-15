@@ -8,7 +8,7 @@ replace (
 )
 
 require (
-	github.com/irisnet/core-sdk-go v0.0.0-20220515104139-554292f91a1a
+	github.com/bianjieai/irita-sdk-go v1.1.1-0.20220517055400-6a29b9f72a39
 	github.com/stretchr/testify v1.7.0
-	google.golang.org/grpc v1.41.0
+	google.golang.org/grpc v1.40.0
 )

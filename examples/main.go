@@ -4,22 +4,21 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bianjieai/irita-sdk-go/modules/nft"
+	"github.com/bianjieai/irita-sdk-go/types"
+	"github.com/bianjieai/irita-sdk-go/types/store"
 	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
-	"github.com/irisnet/core-sdk-go/types"
-	"github.com/irisnet/core-sdk-go/types/store"
 )
 
 func main() {
-	fee, _ := types.ParseDecCoins("100000uirita") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
+	fee, _ := types.ParseCoin("100000uirita") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
 	// 初始化 SDK 配置
 	options := []types.Option{
-		types.AlgoOption("sm2"),
 		types.KeyDAOOption(store.NewMemory(nil)),
-		types.TimeoutOption(10),
-		types.BIP44PathOption(""),
+		types.FeeOption(types.NewDecCoinsFromCoins(fee)),
 	}
-	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "ws://47.100.192.234:26657", "testing", options...)
+	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "ws://47.100.192.234:26657", "47.100.192.234:9090", "testing", options...)
 	if err != nil {
 		panic(err)
 	}
@@ -44,12 +43,12 @@ func main() {
 		Mode:     types.Commit,    // Tx 广播模式
 	}
 
-	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：BANK 发送交易
-	result, err := client.Bank.Send("", fee, baseTx)
+	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：创建 NFT 类别
+	result, err := client.NFT.IssueDenom(nft.IssueDenomRequest{ID: "testdenom", Name: "TestDenom", Schema: "{}"}, baseTx)
 	if err != nil {
-		fmt.Println(fmt.Errorf("BANK 发送失败: %s", err.Error()))
+		fmt.Println(fmt.Errorf("NFT 类别创建失败: %s", err.Error()))
 	} else {
-		fmt.Println("BANK 发送成功：", result.Hash)
+		fmt.Println("NFT 类别创建成功：", result.Hash)
 	}
 
 	// 使用 Client 选择对应的功能模块，查询链上状态；例：查询账户信息
