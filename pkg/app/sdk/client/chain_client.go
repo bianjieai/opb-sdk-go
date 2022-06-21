@@ -1,6 +1,9 @@
 package client
 
 import (
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model/identity"
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model/perm"
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model/wasm"
 	"github.com/irisnet/core-sdk-go/bank"
 	"github.com/irisnet/core-sdk-go/client"
 	"github.com/irisnet/core-sdk-go/common/codec"
@@ -51,6 +54,10 @@ type Client struct {
 	Oracle  oracle.Client
 	HTLC    htlc.Client
 	Swap    coinswap.Client
+
+	Identity identity.Client
+	Perm     perm.Client
+	Wasm     wasm.Client
 }
 
 func NewClient(cfg types.ClientConfig) Client {
@@ -71,6 +78,10 @@ func NewClient(cfg types.ClientConfig) Client {
 	swapClient := coinswap.NewClient(baseClient, encodingConfig.Marshaler, bankClient.TotalSupply)
 	mtClient := mt.NewClient(baseClient, encodingConfig.Marshaler)
 
+	idClient := identity.NewClient(baseClient, encodingConfig.Marshaler)
+	permClient := perm.NewClient(baseClient, encodingConfig.Marshaler)
+	wasmClient := wasm.NewClient(baseClient)
+
 	sdkClient := &Client{
 		logger:         baseClient.Logger(),
 		BaseClient:     baseClient,
@@ -88,6 +99,9 @@ func NewClient(cfg types.ClientConfig) Client {
 		HTLC:           htlcClient,
 		Swap:           swapClient,
 		MT:             mtClient,
+		Identity:       idClient,
+		Perm:           permClient,
+		Wasm:           wasmClient,
 	}
 
 	sdkClient.RegisterModule(
@@ -103,6 +117,9 @@ func NewClient(cfg types.ClientConfig) Client {
 		htlcClient,
 		swapClient,
 		mtClient,
+		idClient,
+		permClient,
+		wasmClient,
 	)
 	return *sdkClient
 }
