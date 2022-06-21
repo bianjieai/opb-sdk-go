@@ -33,6 +33,7 @@ import (
 
 	"github.com/irisnet/irismod-sdk-go/coinswap"
 
+	keys "github.com/irisnet/core-sdk-go/client"
 	"github.com/irisnet/irismod-sdk-go/mt"
 )
 
@@ -58,6 +59,8 @@ type Client struct {
 	Identity identity.Client
 	Perm     perm.Client
 	Wasm     wasm.Client
+
+	Key keys.Client
 }
 
 func NewClient(cfg types.ClientConfig) Client {
@@ -82,6 +85,8 @@ func NewClient(cfg types.ClientConfig) Client {
 	permClient := perm.NewClient(baseClient, encodingConfig.Marshaler)
 	wasmClient := wasm.NewClient(baseClient)
 
+	keysClient := keys.NewKeysClient(cfg, baseClient)
+
 	sdkClient := &Client{
 		logger:         baseClient.Logger(),
 		BaseClient:     baseClient,
@@ -102,6 +107,7 @@ func NewClient(cfg types.ClientConfig) Client {
 		Identity:       idClient,
 		Perm:           permClient,
 		Wasm:           wasmClient,
+		Key:            keysClient,
 	}
 
 	sdkClient.RegisterModule(
