@@ -18,6 +18,7 @@ func main() {
 	options := []types.Option{
 		types.AlgoOption("sm2"),
 		types.KeyDAOOption(store.NewMemory(nil)),
+		types.FeeOption(fee),
 		types.TimeoutOption(10),
 		types.BIP44PathOption(""),
 	}
@@ -30,21 +31,21 @@ func main() {
 	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
 
 	// 开启 TLS 连接
-	authToken.SetRequireTransportSecurity(true)
+	authToken.SetRequireTransportSecurity(false)
 	// 创建 OPB 客户端
 	client := opb.NewClient(cfg, &authToken)
 
 	// 导入私钥
-	// 暂时没用，irita-sdk 和 core-sdk 都有 keys 的实现
-	//client.Key.Recover("test_key_name", "test_password", "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic")
+	address, _ := client.Key.Recover("test_key_name", "test_password", "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic")
+	fmt.Println("address:", address)
 
 	// 初始化 Tx 基础参数
 	baseTx := types.BaseTx{
-		From:     "test_key_name", // 对应上面导入的私钥名称
-		Password: "test_password", // 对应上面导入的私钥密码
-		Gas:      200000,          // 单 Tx 消耗的 Gas 上限
-		Memo:     "",              // Tx 备注
-		Mode:     types.Commit,    // Tx 广播模式
+		From:     "validator",  // 对应上面导入的私钥名称
+		Password: "12345678",   // 对应上面导入的私钥密码
+		Gas:      200000,       // 单 Tx 消耗的 Gas 上限
+		Memo:     "",           // Tx 备注
+		Mode:     types.Commit, // Tx 广播模式
 	}
 
 	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：创建 NFT 类别
@@ -72,7 +73,7 @@ func main() {
 	}
 
 	// 使用 Client 选择对应的功能模块，查询链上状态；例：查询账户信息
-	acc, err := client.Bank.QueryAccount("iaa1lxvmp9h0v0dhzetmhstrmw3ecpplp5tljnr35f")
+	acc, err := client.Bank.QueryAccount("iaa17y3qs2zuanr93nk844x0t7e6ktchwygnc8fr0g")
 	if err != nil {
 		fmt.Println(fmt.Errorf("账户查询失败: %s", err.Error()))
 	} else {
