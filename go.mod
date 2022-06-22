@@ -15,8 +15,16 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/irisnet/core-sdk-go v0.0.0-20220515104139-554292f91a1a
 	github.com/irisnet/irismod-sdk-go/coinswap v0.0.0-20220428072529-21111674dbce
+	github.com/irisnet/irismod-sdk-go/gov v0.0.0-20220620094858-7fee6bda7414
+	github.com/irisnet/irismod-sdk-go/htlc v0.0.0-20220620094858-7fee6bda7414
 	github.com/irisnet/irismod-sdk-go/mt v0.0.0-20220428072529-21111674dbce
 	github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220428072529-21111674dbce
+	github.com/irisnet/irismod-sdk-go/oracle v0.0.0-20220620094858-7fee6bda7414
+	github.com/irisnet/irismod-sdk-go/random v0.0.0-20220620094858-7fee6bda7414
+	github.com/irisnet/irismod-sdk-go/record v0.0.0-20220620094858-7fee6bda7414
+	github.com/irisnet/irismod-sdk-go/service v0.0.0-20220620094858-7fee6bda7414
+	github.com/irisnet/irismod-sdk-go/staking v0.0.0-20220620094858-7fee6bda7414
+	github.com/irisnet/irismod-sdk-go/token v0.0.0-20220620094858-7fee6bda7414
 	github.com/spf13/cast v1.4.1
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.19
