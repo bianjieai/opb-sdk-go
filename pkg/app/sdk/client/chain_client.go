@@ -1,6 +1,9 @@
 package client
 
 import (
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model/identity"
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model/perm"
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model/wasm"
 	"github.com/irisnet/core-sdk-go/bank"
 	"github.com/irisnet/core-sdk-go/client"
 	"github.com/irisnet/core-sdk-go/common/codec"
@@ -10,17 +13,28 @@ import (
 	txtypes "github.com/irisnet/core-sdk-go/types/tx"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/irisnet/irismod-sdk-go/coinswap"
-	"github.com/irisnet/irismod-sdk-go/gov"
-	"github.com/irisnet/irismod-sdk-go/htlc"
-	"github.com/irisnet/irismod-sdk-go/mt"
-	"github.com/irisnet/irismod-sdk-go/nft"
-	"github.com/irisnet/irismod-sdk-go/oracle"
-	"github.com/irisnet/irismod-sdk-go/random"
-	"github.com/irisnet/irismod-sdk-go/record"
-	"github.com/irisnet/irismod-sdk-go/service"
-	"github.com/irisnet/irismod-sdk-go/staking"
 	"github.com/irisnet/irismod-sdk-go/token"
+
+	"github.com/irisnet/irismod-sdk-go/staking"
+
+	"github.com/irisnet/irismod-sdk-go/service"
+
+	"github.com/irisnet/irismod-sdk-go/record"
+
+	"github.com/irisnet/irismod-sdk-go/random"
+
+	"github.com/irisnet/irismod-sdk-go/oracle"
+
+	"github.com/irisnet/irismod-sdk-go/nft"
+
+	"github.com/irisnet/irismod-sdk-go/htlc"
+
+	"github.com/irisnet/irismod-sdk-go/gov"
+
+	"github.com/irisnet/irismod-sdk-go/coinswap"
+
+	keys "github.com/irisnet/core-sdk-go/client"
+	"github.com/irisnet/irismod-sdk-go/mt"
 )
 
 type Client struct {
@@ -30,7 +44,6 @@ type Client struct {
 
 	types.BaseClient
 	Bank    bank.Client
-	Key     client.Client
 	Token   token.Client
 	Staking staking.Client
 	Gov     gov.Client
@@ -42,6 +55,12 @@ type Client struct {
 	Oracle  oracle.Client
 	HTLC    htlc.Client
 	Swap    coinswap.Client
+
+	Identity identity.Client
+	Perm     perm.Client
+	Wasm     wasm.Client
+
+	Key keys.Client
 }
 
 func NewClient(cfg types.ClientConfig) Client {
@@ -50,7 +69,6 @@ func NewClient(cfg types.ClientConfig) Client {
 	// create a instance of baseClient
 	baseClient := client.NewBaseClient(cfg, encodingConfig, nil)
 	bankClient := bank.NewClient(baseClient, encodingConfig.Marshaler)
-	keysClient := client.NewKeysClient(cfg, baseClient)
 	tokenClient := token.NewClient(baseClient, encodingConfig.Marshaler)
 	stakingClient := staking.NewClient(baseClient, encodingConfig.Marshaler)
 	govClient := gov.NewClient(baseClient, encodingConfig.Marshaler)
@@ -63,13 +81,18 @@ func NewClient(cfg types.ClientConfig) Client {
 	swapClient := coinswap.NewClient(baseClient, encodingConfig.Marshaler, bankClient.TotalSupply)
 	mtClient := mt.NewClient(baseClient, encodingConfig.Marshaler)
 
+	idClient := identity.NewClient(baseClient, encodingConfig.Marshaler)
+	permClient := perm.NewClient(baseClient, encodingConfig.Marshaler)
+	wasmClient := wasm.NewClient(baseClient)
+
+	keysClient := keys.NewKeysClient(cfg, baseClient)
+
 	sdkClient := &Client{
 		logger:         baseClient.Logger(),
 		BaseClient:     baseClient,
 		moduleManager:  make(map[string]types.Module),
 		encodingConfig: encodingConfig,
 		Bank:           bankClient,
-		Key:            keysClient,
 		Token:          tokenClient,
 		Staking:        stakingClient,
 		Gov:            govClient,
@@ -81,6 +104,10 @@ func NewClient(cfg types.ClientConfig) Client {
 		HTLC:           htlcClient,
 		Swap:           swapClient,
 		MT:             mtClient,
+		Identity:       idClient,
+		Perm:           permClient,
+		Wasm:           wasmClient,
+		Key:            keysClient,
 	}
 
 	sdkClient.RegisterModule(
@@ -96,6 +123,9 @@ func NewClient(cfg types.ClientConfig) Client {
 		htlcClient,
 		swapClient,
 		mtClient,
+		idClient,
+		permClient,
+		wasmClient,
 	)
 	return *sdkClient
 }
