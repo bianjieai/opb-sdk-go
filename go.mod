@@ -10,6 +10,7 @@ replace (
 )
 
 require (
+	github.com/bianjieai/iritamod-sdk-go v0.0.0-20220622091247-de18248d9580
 	github.com/cosmos/cosmos-sdk v0.45.5 // indirect
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
