@@ -15,7 +15,9 @@ replace (
 )
 
 require (
-	github.com/bianjieai/irita-sdk-go v1.1.1-0.20211214032850-7c9cd100e6bd
+	github.com/irisnet/core-sdk-go v0.0.0-20220515104139-554292f91a1a
+	github.com/irisnet/irismod-sdk-go v0.0.0-20220620094858-7fee6bda7414
+	github.com/bianjieai/iritamod-sdk-go v0.0.0-20220622091247-de18248d9580
 	github.com/stretchr/testify v1.7.0
 	google.golang.org/grpc v1.40.0
 )
