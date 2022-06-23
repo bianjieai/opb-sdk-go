@@ -10,9 +10,8 @@ replace (
 )
 
 require (
+	github.com/bianjieai/iritamod-sdk-go v0.0.0-20220622091247-de18248d9580
 	github.com/cosmos/cosmos-sdk v0.45.5 // indirect
-	github.com/gogo/protobuf v1.3.3
-	github.com/golang/protobuf v1.5.2
 	github.com/irisnet/core-sdk-go v0.0.0-20220515104139-554292f91a1a
 	github.com/irisnet/irismod-sdk-go/coinswap v0.0.0-20220428072529-21111674dbce
 	github.com/irisnet/irismod-sdk-go/gov v0.0.0-20220620094858-7fee6bda7414
@@ -25,10 +24,7 @@ require (
 	github.com/irisnet/irismod-sdk-go/service v0.0.0-20220620094858-7fee6bda7414
 	github.com/irisnet/irismod-sdk-go/staking v0.0.0-20220620094858-7fee6bda7414
 	github.com/irisnet/irismod-sdk-go/token v0.0.0-20220620094858-7fee6bda7414
-	github.com/spf13/cast v1.4.1
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.19
-	google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb
 	google.golang.org/grpc v1.45.0
-	gopkg.in/yaml.v2 v2.4.0
 )

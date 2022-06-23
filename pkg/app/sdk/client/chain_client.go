@@ -1,40 +1,28 @@
 package client
 
 import (
-	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model/identity"
-	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model/perm"
-	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model/wasm"
+	"github.com/bianjieai/iritamod-sdk-go/identity"
+	"github.com/bianjieai/iritamod-sdk-go/perm"
 	"github.com/irisnet/core-sdk-go/bank"
 	"github.com/irisnet/core-sdk-go/client"
+	keys "github.com/irisnet/core-sdk-go/client"
 	"github.com/irisnet/core-sdk-go/common/codec"
 	cdctypes "github.com/irisnet/core-sdk-go/common/codec/types"
 	cryptocodec "github.com/irisnet/core-sdk-go/common/crypto/codec"
 	"github.com/irisnet/core-sdk-go/types"
 	txtypes "github.com/irisnet/core-sdk-go/types/tx"
-	"github.com/tendermint/tendermint/libs/log"
-
-	"github.com/irisnet/irismod-sdk-go/token"
-
-	"github.com/irisnet/irismod-sdk-go/staking"
-
-	"github.com/irisnet/irismod-sdk-go/service"
-
-	"github.com/irisnet/irismod-sdk-go/record"
-
-	"github.com/irisnet/irismod-sdk-go/random"
-
-	"github.com/irisnet/irismod-sdk-go/oracle"
-
-	"github.com/irisnet/irismod-sdk-go/nft"
-
-	"github.com/irisnet/irismod-sdk-go/htlc"
-
-	"github.com/irisnet/irismod-sdk-go/gov"
-
 	"github.com/irisnet/irismod-sdk-go/coinswap"
-
-	keys "github.com/irisnet/core-sdk-go/client"
+	"github.com/irisnet/irismod-sdk-go/gov"
+	"github.com/irisnet/irismod-sdk-go/htlc"
 	"github.com/irisnet/irismod-sdk-go/mt"
+	"github.com/irisnet/irismod-sdk-go/nft"
+	"github.com/irisnet/irismod-sdk-go/oracle"
+	"github.com/irisnet/irismod-sdk-go/random"
+	"github.com/irisnet/irismod-sdk-go/record"
+	"github.com/irisnet/irismod-sdk-go/service"
+	"github.com/irisnet/irismod-sdk-go/staking"
+	"github.com/irisnet/irismod-sdk-go/token"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 type Client struct {
@@ -58,7 +46,6 @@ type Client struct {
 
 	Identity identity.Client
 	Perm     perm.Client
-	Wasm     wasm.Client
 
 	Key keys.Client
 }
@@ -83,7 +70,6 @@ func NewClient(cfg types.ClientConfig) Client {
 
 	idClient := identity.NewClient(baseClient, encodingConfig.Marshaler)
 	permClient := perm.NewClient(baseClient, encodingConfig.Marshaler)
-	wasmClient := wasm.NewClient(baseClient)
 
 	keysClient := keys.NewKeysClient(cfg, baseClient)
 
@@ -106,7 +92,6 @@ func NewClient(cfg types.ClientConfig) Client {
 		MT:             mtClient,
 		Identity:       idClient,
 		Perm:           permClient,
-		Wasm:           wasmClient,
 		Key:            keysClient,
 	}
 
@@ -125,7 +110,6 @@ func NewClient(cfg types.ClientConfig) Client {
 		mtClient,
 		idClient,
 		permClient,
-		wasmClient,
 	)
 	return *sdkClient
 }
