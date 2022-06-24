@@ -10,6 +10,7 @@ import (
 	"github.com/irisnet/core-sdk-go/types/store"
 	"github.com/irisnet/irismod-sdk-go/mt"
 	"github.com/irisnet/irismod-sdk-go/nft"
+	tendermintTypes "github.com/tendermint/tendermint/abci/types"
 )
 
 func main() {
@@ -20,7 +21,7 @@ func main() {
 		types.KeyDAOOption(store.NewMemory(nil)),
 		types.FeeOption(fee),
 		types.TimeoutOption(10),
-		types.BIP44PathOption(""),
+		types.CachedOption(true),
 	}
 	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "47.100.192.234:9090", "testing", options...)
 	if err != nil {
@@ -31,6 +32,7 @@ func main() {
 	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
 
 	// 开启 TLS 连接
+	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
 	authToken.SetRequireTransportSecurity(false)
 	// 创建 OPB 客户端
 	client := opb.NewClient(cfg, &authToken)
@@ -45,8 +47,10 @@ func main() {
 		Password: "test_password", // 对应上面导入的私钥密码
 		Gas:      200000,          // 单 Tx 消耗的 Gas 上限
 		Memo:     "",              // Tx 备注
-		Mode:     types.Commit,    // Tx 广播模式
+		Mode:     types.Sync,      // Tx 广播模式
 	}
+	// 初始化交易哈希查询队列
+	var hashArray []string
 
 	// 使用 Client 选择对应的功能模块，查询链上状态；例：查询账户信息
 	acc, err := client.Bank.QueryAccount("iaa1lxvmp9h0v0dhzetmhstrmw3ecpplp5tljnr35f")
@@ -61,7 +65,8 @@ func main() {
 	if err != nil {
 		fmt.Println(fmt.Errorf("NFT 类别创建失败: %s", err.Error()))
 	} else {
-		fmt.Println("NFT 类别创建成功：", nftResult.Hash)
+		fmt.Println("NFT 类别创建成功 TxHash：", nftResult.Hash)
+		hashArray = append(hashArray, nftResult.Hash)
 	}
 
 	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：创建 MT 类别
@@ -69,7 +74,8 @@ func main() {
 	if err != nil {
 		fmt.Println(fmt.Errorf("MT 类别创建失败: %s", err.Error()))
 	} else {
-		fmt.Println("MT 类别创建成功：", mtResult.Hash)
+		fmt.Println("MT 类别创建成功 TxHash：", mtResult.Hash)
+		hashArray = append(hashArray, mtResult.Hash)
 	}
 
 	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：BANK 发送交易
@@ -78,6 +84,22 @@ func main() {
 		fmt.Println(fmt.Errorf("BANK 发送失败: %s", err.Error()))
 	} else {
 		fmt.Println("BANK 发送成功：", result.Hash)
+		hashArray = append(hashArray, result.Hash)
+	}
+
+	// 等待十秒后查询交易
+	time.Sleep(time.Second * 10)
+	for _, hash := range hashArray {
+		tx, err := client.QueryTx(hash)
+		if err != nil {
+			fmt.Println("查询交易错误：", err)
+			continue
+		}
+		if tx.Result.Code == tendermintTypes.CodeTypeOK {
+			fmt.Println("交易上链成功，交易哈希:", hash)
+		} else {
+			fmt.Printf("交易上链失败，交易哈希:%s， 错误:%s. \n", hash, tx.Result.Log)
+		}
 	}
 
 	// 使用 Client 订阅事件通知，例：订阅区块
