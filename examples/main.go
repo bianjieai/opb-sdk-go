@@ -13,14 +13,13 @@ import (
 )
 
 func main() {
-	fee, _ := types.ParseDecCoins("300000ugas") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
+	fee, _ := types.ParseDecCoins("100000ugas") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
 	// 初始化 SDK 配置
 	options := []types.Option{
 		types.AlgoOption("sm2"),
 		types.KeyDAOOption(store.NewMemory(nil)),
 		types.FeeOption(fee),
 		types.TimeoutOption(10),
-		types.BIP44PathOption(""),
 	}
 	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "47.100.192.234:9090", "testing", options...)
 	if err != nil {
@@ -30,7 +29,7 @@ func main() {
 	// 初始化 OPB 网关账号（测试网环境设置为 nil 即可）
 	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
 
-	// 开启 TLS 连接
+	// 开启 TLS 连接，若在 rpcAddr 使用 https 请求的话需设为 true
 	authToken.SetRequireTransportSecurity(false)
 	// 创建 OPB 客户端
 	client := opb.NewClient(cfg, &authToken)
@@ -45,7 +44,7 @@ func main() {
 		Password: "test_password", // 对应上面导入的私钥密码
 		Gas:      200000,          // 单 Tx 消耗的 Gas 上限
 		Memo:     "",              // Tx 备注
-		Mode:     types.Commit,    // Tx 广播模式
+		Mode:     types.Sync,      // Tx 广播模式
 	}
 
 	// 使用 Client 选择对应的功能模块，查询链上状态；例：查询账户信息
@@ -61,7 +60,7 @@ func main() {
 	if err != nil {
 		fmt.Println(fmt.Errorf("NFT 类别创建失败: %s", err.Error()))
 	} else {
-		fmt.Println("NFT 类别创建成功：", nftResult.Hash)
+		fmt.Println("NFT 类别创建成功 TxHash：", nftResult.Hash)
 	}
 
 	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：创建 MT 类别
@@ -69,7 +68,7 @@ func main() {
 	if err != nil {
 		fmt.Println(fmt.Errorf("MT 类别创建失败: %s", err.Error()))
 	} else {
-		fmt.Println("MT 类别创建成功：", mtResult.Hash)
+		fmt.Println("MT 类别创建成功 TxHash：", mtResult.Hash)
 	}
 
 	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：BANK 发送交易
