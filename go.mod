@@ -13,11 +13,11 @@ require (
 	github.com/bianjieai/iritamod-sdk-go v0.0.0-20220622091247-de18248d9580
 	github.com/cosmos/cosmos-sdk v0.45.5 // indirect
 	github.com/irisnet/core-sdk-go v0.0.0-20220515104139-554292f91a1a
-	github.com/irisnet/irismod-sdk-go/coinswap v0.0.0-20220428072529-21111674dbce
+	github.com/irisnet/irismod-sdk-go/coinswap v0.0.0-20220620094858-7fee6bda7414
 	github.com/irisnet/irismod-sdk-go/gov v0.0.0-20220620094858-7fee6bda7414
 	github.com/irisnet/irismod-sdk-go/htlc v0.0.0-20220620094858-7fee6bda7414
-	github.com/irisnet/irismod-sdk-go/mt v0.0.0-20220428072529-21111674dbce
-	github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220428072529-21111674dbce
+	github.com/irisnet/irismod-sdk-go/mt v0.0.0-20220620094858-7fee6bda7414
+	github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220620094858-7fee6bda7414
 	github.com/irisnet/irismod-sdk-go/oracle v0.0.0-20220620094858-7fee6bda7414
 	github.com/irisnet/irismod-sdk-go/random v0.0.0-20220620094858-7fee6bda7414
 	github.com/irisnet/irismod-sdk-go/record v0.0.0-20220620094858-7fee6bda7414
