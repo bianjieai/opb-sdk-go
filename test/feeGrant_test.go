@@ -2,20 +2,29 @@ package test
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
 	"time"
 
+	"github.com/avast/retry-go"
+	"github.com/stretchr/testify/require"
+
+	tendermintTypes "github.com/tendermint/tendermint/abci/types"
+
+	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/client"
+	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
+
 	"github.com/irisnet/core-sdk-go/feegrant"
 	"github.com/irisnet/core-sdk-go/types"
 	"github.com/irisnet/core-sdk-go/types/store"
 	"github.com/irisnet/irismod-sdk-go/nft"
-	"github.com/stretchr/testify/require"
 )
 
-var cfg types.ClientConfig
 var txClient client.Client
 var baseTx types.BaseTx
+var granter types.AccAddress
+var grantee types.AccAddress
 
 func init() {
 	fee, _ := types.ParseDecCoins("300000ugas") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
@@ -27,75 +36,138 @@ func init() {
 		types.TimeoutOption(10),
 		types.CachedOption(true),
 	}
-	cfg, err := types.NewClientConfig("http://127.0.0.1:26657", "127.0.0.1:9090", "2022", options...)
+	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "47.100.192.234:9090", "testing", options...)
 	if err != nil {
 		panic(err)
 	}
 	// 初始化 OPB 网关账号（测试网环境设置为 nil 即可）
-	//authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
-
-	// 创建 OPB 客户端
-	//client := opb.NewClient(cfg, &authToken)
-	txClient = client.NewClient(cfg)
-
+	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
 	// 开启 TLS 连接
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
-	//authToken.SetRequireTransportSecurity(true)
+	authToken.SetRequireTransportSecurity(false)
+
+	// 创建 OPB 客户端
+	txClient = opb.NewClient(cfg, &authToken)
+
 	// 创建 OPB 客户端
 	//feeGrantClient = sdk.NewClient(cfg)
 
 	// 导入私钥
-	address, _ := txClient.Key.Recover("validator", "12345678", "west farm disease weasel age cram cross second battle brief slim steel network arrive series lab gorilla gun fiction robust skin torch planet burden")
-	fmt.Println("address:", address)
+	address, _ := txClient.Key.Recover("test_key_name", "test_password", "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic")
+	granter, _ = types.AccAddressFromBech32(address)
+
+	granteeAddr, _, _ := txClient.Key.Add("test_grantee", "12345678")
+	grantee, _ = types.AccAddressFromBech32(granteeAddr)
 
 	// 初始化 Tx 基础参数
 	baseTx = types.BaseTx{
-		From:     "validator", // 对应上面导入的私钥名称
-		Password: "12345678",  // 对应上面导入的私钥密码
-		Gas:      200000,      // 单 Tx 消耗的 Gas 上限
-		Memo:     "",          // Tx 备注
-		Mode:     types.Sync,  // Tx 广播模式
+		From:     "test_key_name", // 对应上面导入的私钥名称
+		Password: "test_password", // 对应上面导入的私钥密码
+		Gas:      200000,          // 单 Tx 消耗的 Gas 上限
+		Memo:     "",              // Tx 备注
+		Mode:     types.Sync,      // Tx 广播模式
 	}
+
 }
 
 //授权
 func TestGrantAllowance(t *testing.T) {
-	granter, _ := types.AccAddressFromBech32("iaa193eqcr7zwtfjx7us0wm33ddtdtct38adr942f3")
-	grantee, _ := types.AccAddressFromBech32("iaa1l3r7kx3nqa7uymk225s97dfsw46cysf3hqwdj8")
-	atom := types.NewCoins(types.NewInt64Coin("ugas", 55500000000))
+	atom := types.NewCoins(types.NewInt64Coin("ugas", 55500000))
 	threeHours := time.Now().Add(3 * time.Hour)
 	basic := &feegrant.BasicAllowance{
 		SpendLimit: atom,        //授权额度
 		Expiration: &threeHours, //过期时间
 	}
+	// 授权
 	result, err := txClient.Feegrant.GrantAllowance(granter, grantee, basic, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, result.Hash)
+	// sync 模式异步上链
+	err2 := retry.Do(func() error {
+		tx, err2 := txClient.QueryTx(result.Hash)
+		if err2 != nil {
+			return err2
+		}
+		require.Equal(t, tx.Result.Code, tendermintTypes.CodeTypeOK, tx.Result.Log)
+		return nil
+	}, retry.Attempts(3), retry.Delay(2*time.Second))
+	require.NoError(t, err2)
 }
 
 //设置交易代扣
 func TestFeeGrant(t *testing.T) {
-	address, _ := txClient.Key.Recover("account4", "12345678", "such tooth bicycle bonus album west win chunk tuna erosion protect rifle kiss purity marble ketchup spirit material cash fee argue silent column obscure")
-	fmt.Println("address:", address)
-	feeGranter, _ := types.AccAddressFromBech32("iaa193eqcr7zwtfjx7us0wm33ddtdtct38adr942f3")
+	testDenom := fmt.Sprintf("testdenom%d", rand.Int())
+	resultTx, err := txClient.NFT.IssueDenom(nft.IssueDenomRequest{
+		ID:   testDenom,
+		Name: testDenom,
+	}, baseTx)
+	require.NoError(t, err)
+	// sync 模式异步上链
+	retryErr := retry.Do(func() error {
+		tx, err2 := txClient.QueryTx(resultTx.Hash)
+		if err2 != nil {
+			return err2
+		}
+		require.Equal(t, tx.Result.Code, tendermintTypes.CodeTypeOK, tx.Result.Log)
+		return nil
+	}, retry.Attempts(3), retry.Delay(2*time.Second))
+	require.NoError(t, retryErr)
+
+	// 记录授权方现有余额
+	granterAcc, err := txClient.Bank.QueryAccount(granter.String())
+	require.NoError(t, err)
+	originToken := granterAcc.Coins.AmountOf("ugas")
+
+	// 限定此次交易费用
+	feeNum := int64(200000)
+
 	baseTx2 := types.BaseTx{
-		From:       "account4",
+		From:       "test_grantee", // 由被授权方发起交易
 		Password:   "12345678",
-		Gas:        200000,
+		Fee:        types.NewDecCoins(types.NewDecCoin("ugas", types.NewInt(feeNum))),
 		Memo:       "",
 		Mode:       types.Sync,
-		FeeGranter: feeGranter, //设置代扣地址
+		FeeGranter: granter, //设置代扣地址
 	}
-	nftResult, err := txClient.NFT.IssueDenom(nft.IssueDenomRequest{ID: "testdenom112", Name: "TestDenom112", Schema: "{}"}, baseTx2)
+	nftResult, err := txClient.NFT.MintNFT(nft.MintNFTRequest{
+		Denom: testDenom,
+		ID:    "testnftid",
+	}, baseTx2)
 	require.NoError(t, err)
 	require.NotEmpty(t, nftResult.Hash)
+	// sync 模式异步上链
+	retryErr = retry.Do(func() error {
+		tx, err2 := txClient.QueryTx(nftResult.Hash)
+		if err2 != nil {
+			return err2
+		}
+		require.Equal(t, tx.Result.Code, tendermintTypes.CodeTypeOK, tx.Result.Log)
+		return nil
+	}, retry.Attempts(3), retry.Delay(2*time.Second))
+	require.NoError(t, retryErr)
+
+	// 查询授权方账户现有余额
+	newGranterAcc, err := txClient.Bank.QueryAccount(granter.String())
+	require.NoError(t, err)
+	newTokenNum := newGranterAcc.Coins.AmountOf("ugas")
+
+	// 授权方账户应代付了200000ugas
+	require.Equal(t, originToken.Add(newTokenNum.Neg()), types.NewInt(feeNum))
 }
 
 //解除授权
 func TestRevokeAllowance(t *testing.T) {
-	granter, _ := types.AccAddressFromBech32("iaa193eqcr7zwtfjx7us0wm33ddtdtct38adr942f3")
-	grantee, _ := types.AccAddressFromBech32("iaa1l3r7kx3nqa7uymk225s97dfsw46cysf3hqwdj8")
 	result, err := txClient.Feegrant.RevokeAllowance(granter, grantee, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, result.Hash)
+	// sync 模式异步上链
+	err2 := retry.Do(func() error {
+		tx, err2 := txClient.QueryTx(result.Hash)
+		if err2 != nil {
+			return err2
+		}
+		require.Equal(t, tx.Result.Code, tendermintTypes.CodeTypeOK, tx.Result.Log)
+		return nil
+	}, retry.Attempts(3), retry.Delay(2*time.Second))
+	require.NoError(t, err2)
 }
