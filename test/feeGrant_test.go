@@ -31,17 +31,21 @@ func init() {
 		panic(err)
 	}
 	// 初始化 OPB 网关账号（测试网环境设置为 nil 即可）
-	//authToken := model.NewAuthToken("d4847dc47d824e82a28b48b7d5d9d168", "3f4e9b5423c94340a75ae287a447f98f", "iaa1j23szu5696tkj5undwgy3krsc5edj6wacqzps0")
-	//authToken := model.NewAuthToken("a36dc219dbdd4dbe809766accbed0ac6", "", "")
-	// 导入私钥
+	//authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
+
+	// 创建 OPB 客户端
+	//client := opb.NewClient(cfg, &authToken)
 	txClient = client.NewClient(cfg)
-	address, _ := txClient.Key.Recover("validator", "12345678", "west farm disease weasel age cram cross second battle brief slim steel network arrive series lab gorilla gun fiction robust skin torch planet burden")
-	fmt.Println("address:", address)
+
 	// 开启 TLS 连接
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
 	//authToken.SetRequireTransportSecurity(true)
 	// 创建 OPB 客户端
 	//feeGrantClient = sdk.NewClient(cfg)
+
+	// 导入私钥
+	address, _ := txClient.Key.Recover("validator", "12345678", "west farm disease weasel age cram cross second battle brief slim steel network arrive series lab gorilla gun fiction robust skin torch planet burden")
+	fmt.Println("address:", address)
 
 	// 初始化 Tx 基础参数
 	baseTx = types.BaseTx{
