@@ -1,1 +1,1 @@
-  cp -r ./scripts/node/ ~/.iris
+  cp -r ./scripts/node/ ~/.irita

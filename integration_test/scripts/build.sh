@@ -1,1 +1,1 @@
-docker build -t irishub-sdk-go .
+docker build -t irita-sdk-go .
