@@ -49,9 +49,6 @@ func init() {
 	// 创建 OPB 客户端
 	txClient = opb.NewClient(cfg, &authToken)
 
-	// 创建 OPB 客户端
-	//feeGrantClient = sdk.NewClient(cfg)
-
 	// 导入私钥
 	address, _ := txClient.Key.Recover("test_key_name", "test_password", "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic")
 	granter, _ = types.AccAddressFromBech32(address)
