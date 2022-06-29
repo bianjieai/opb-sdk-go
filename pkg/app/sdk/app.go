@@ -50,8 +50,6 @@ func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) client.Client
 	}
 	cfg.Header = httpHeader
 
-	cfg.Header = httpHeader
-
 	return client.NewClient(cfg)
 }
 
