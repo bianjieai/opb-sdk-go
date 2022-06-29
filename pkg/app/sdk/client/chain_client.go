@@ -1,14 +1,13 @@
 package client
 
 import (
-	"github.com/bianjieai/iritamod-sdk-go/identity"
-	"github.com/bianjieai/iritamod-sdk-go/perm"
 	"github.com/irisnet/core-sdk-go/bank"
 	"github.com/irisnet/core-sdk-go/client"
 	keys "github.com/irisnet/core-sdk-go/client"
 	"github.com/irisnet/core-sdk-go/common/codec"
 	cdctypes "github.com/irisnet/core-sdk-go/common/codec/types"
 	cryptocodec "github.com/irisnet/core-sdk-go/common/crypto/codec"
+	"github.com/irisnet/core-sdk-go/feegrant"
 	"github.com/irisnet/core-sdk-go/types"
 	txtypes "github.com/irisnet/core-sdk-go/types/tx"
 	"github.com/irisnet/irismod-sdk-go/mt"
@@ -18,6 +17,9 @@ import (
 	"github.com/irisnet/irismod-sdk-go/service"
 	"github.com/irisnet/irismod-sdk-go/token"
 	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/bianjieai/iritamod-sdk-go/identity"
+	"github.com/bianjieai/iritamod-sdk-go/perm"
 )
 
 type Client struct {
@@ -37,7 +39,8 @@ type Client struct {
 	Identity identity.Client
 	Perm     perm.Client
 
-	Key keys.Client
+	Feegrant feegrant.Client
+	Key      keys.Client
 }
 
 func NewClient(cfg types.ClientConfig) Client {
@@ -56,6 +59,7 @@ func NewClient(cfg types.ClientConfig) Client {
 	idClient := identity.NewClient(baseClient, encodingConfig.Marshaler)
 	permClient := perm.NewClient(baseClient, encodingConfig.Marshaler)
 
+	feegrantClient := feegrant.NewClient(baseClient, encodingConfig.Marshaler)
 	keysClient := keys.NewKeysClient(cfg, baseClient)
 
 	sdkClient := &Client{
@@ -72,6 +76,7 @@ func NewClient(cfg types.ClientConfig) Client {
 		MT:             mtClient,
 		Identity:       idClient,
 		Perm:           permClient,
+		Feegrant:       feegrantClient,
 		Key:            keysClient,
 	}
 
@@ -85,6 +90,7 @@ func NewClient(cfg types.ClientConfig) Client {
 		mtClient,
 		idClient,
 		permClient,
+		feegrantClient,
 	)
 	return *sdkClient
 }
