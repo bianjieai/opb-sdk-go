@@ -2,14 +2,15 @@ package test
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/client"
 	"github.com/irisnet/core-sdk-go/feegrant"
 	"github.com/irisnet/core-sdk-go/types"
 	"github.com/irisnet/core-sdk-go/types/store"
 	"github.com/irisnet/irismod-sdk-go/nft"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
 )
 
 var cfg types.ClientConfig

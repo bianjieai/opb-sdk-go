@@ -1,8 +1,6 @@
 package client
 
 import (
-	"github.com/bianjieai/iritamod-sdk-go/identity"
-	"github.com/bianjieai/iritamod-sdk-go/perm"
 	"github.com/irisnet/core-sdk-go/bank"
 	"github.com/irisnet/core-sdk-go/client"
 	keys "github.com/irisnet/core-sdk-go/client"
@@ -19,6 +17,9 @@ import (
 	"github.com/irisnet/irismod-sdk-go/service"
 	"github.com/irisnet/irismod-sdk-go/token"
 	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/bianjieai/iritamod-sdk-go/identity"
+	"github.com/bianjieai/iritamod-sdk-go/perm"
 )
 
 type Client struct {
