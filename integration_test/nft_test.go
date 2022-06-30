@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"fmt"
+	"github.com/irisnet/core-sdk-go/types/query"
 	"strings"
 
 	sdk "github.com/irisnet/core-sdk-go/types"
@@ -70,14 +71,22 @@ func (s IntegrationTestSuite) TestNFT() {
 
 	nftRes, err := s.NFT.QueryNFT(mintReq.Denom, mintReq.ID)
 	require.NoError(s.T(), err)
+	fmt.Println(nftRes)
 	require.Equal(s.T(), editReq.URI, nftRes.URI)
 
 	supply, err := s.NFT.QuerySupply(mintReq.Denom, nftRes.Creator)
 	require.NoError(s.T(), err)
+	fmt.Println(supply)
 	require.Equal(s.T(), uint64(1), supply)
-
-	owner, err := s.NFT.QueryOwner(nftRes.Creator, mintReq.Denom)
+	pagination := query.PageRequest{
+		//Key:        []byte{1},
+		Offset:     0,
+		Limit:      10,
+		CountTotal: true,
+	}
+	owner, err := s.NFT.QueryOwner(nftRes.Creator, mintReq.Denom, &pagination)
 	require.NoError(s.T(), err)
+	fmt.Println(owner)
 	require.Len(s.T(), owner.IDCs, 1)
 	require.Len(s.T(), owner.IDCs[0].TokenIDs, 1)
 	require.Equal(s.T(), tokenID, owner.IDCs[0].TokenIDs[0])
@@ -98,7 +107,7 @@ func (s IntegrationTestSuite) TestNFT() {
 	require.NoError(s.T(), err)
 	require.NotEmpty(s.T(), res.Hash)
 
-	owner, err = s.NFT.QueryOwner(transferReq.Recipient, mintReq.Denom)
+	owner, err = s.NFT.QueryOwner(transferReq.Recipient, mintReq.Denom, &pagination)
 	require.NoError(s.T(), err)
 	require.Len(s.T(), owner.IDCs, 1)
 	require.Len(s.T(), owner.IDCs[0].TokenIDs, 1)
@@ -108,8 +117,9 @@ func (s IntegrationTestSuite) TestNFT() {
 	require.NoError(s.T(), err)
 	require.Equal(s.T(), uint64(1), supply)
 
-	denoms, err := s.NFT.QueryDenoms()
+	denoms, err := s.NFT.QueryDenoms(&pagination)
 	require.NoError(s.T(), err)
+	fmt.Println(denoms)
 	require.NotEmpty(s.T(), denoms)
 
 	d, err := s.NFT.QueryDenom(denomID)
@@ -118,8 +128,9 @@ func (s IntegrationTestSuite) TestNFT() {
 	require.Equal(s.T(), denomName, d.Name)
 	require.Equal(s.T(), schema, d.Schema)
 
-	col, err := s.NFT.QueryCollection(denomID)
+	col, err := s.NFT.QueryCollection(denomID, &pagination)
 	require.NoError(s.T(), err)
+	fmt.Println(col)
 	require.EqualValues(s.T(), d, col.Denom)
 	require.Len(s.T(), col.NFTs, 1)
 	require.Equal(s.T(), mintReq.ID, col.NFTs[0].ID)
