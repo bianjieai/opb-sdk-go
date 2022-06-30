@@ -53,7 +53,7 @@ func main() {
 	var hashArray []string
 
 	// 使用 Client 选择对应的功能模块，查询链上状态；例：查询账户信息
-	acc, err := client.Bank.QueryAccount("iaa1lxvmp9h0v0dhzetmhstrmw3ecpplp5tljnr35f")
+	acc, err := client.Bank.QueryAccount(address)
 	if err != nil {
 		fmt.Println(fmt.Errorf("账户查询失败: %s", err.Error()))
 	} else {
