@@ -15,7 +15,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.5 // indirect
 	github.com/irisnet/core-sdk-go v0.0.0-20220515104139-554292f91a1a
 	github.com/irisnet/irismod-sdk-go/mt v0.0.0-20220630035504-d1da9a44093b
-	github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220630035504-d1da9a44093b
+	github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220630071928-f8a9c5d21264
 	github.com/irisnet/irismod-sdk-go/random v0.0.0-20220630035504-d1da9a44093b
 	github.com/irisnet/irismod-sdk-go/record v0.0.0-20220630035504-d1da9a44093b
 	github.com/irisnet/irismod-sdk-go/service v0.0.0-20220630035504-d1da9a44093b

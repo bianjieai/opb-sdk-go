@@ -615,8 +615,8 @@ github.com/irisnet/core-sdk-go v0.0.0-20220515104139-554292f91a1a h1:73+NylcmDEi
 github.com/irisnet/core-sdk-go v0.0.0-20220515104139-554292f91a1a/go.mod h1:l2QBSZQbdG5WmpB9Fxsqa3/yz/Fok0iK3pb781YuEGA=
 github.com/irisnet/irismod-sdk-go/mt v0.0.0-20220630035504-d1da9a44093b h1:FGOGLn8opB9mbUVC1FiIJbBg3VEDXkSIBz51th6f9+8=
 github.com/irisnet/irismod-sdk-go/mt v0.0.0-20220630035504-d1da9a44093b/go.mod h1:j3snGbXbLeKv0bx9e59w4yarOrjPto5N8Qwnwr4XYHU=
-github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220630035504-d1da9a44093b h1:qh4/fe7jHSTrlT/UxBJL2H2tSCSjfmOudMooaWhH0TE=
-github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220630035504-d1da9a44093b/go.mod h1:r0Or5YVAWaRap2A6wexyJa0mRUMmj0yDenSThk0pQxg=
+github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220630071928-f8a9c5d21264 h1:/prEsXhW7MmUlqIry+72hfokGqparSBAtRKF9cHt280=
+github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220630071928-f8a9c5d21264/go.mod h1:r0Or5YVAWaRap2A6wexyJa0mRUMmj0yDenSThk0pQxg=
 github.com/irisnet/irismod-sdk-go/random v0.0.0-20220630035504-d1da9a44093b h1:pUGH8fhmEWl2DrlnR+i91NMMk6+Af8n0X4YPzLsYpgI=
 github.com/irisnet/irismod-sdk-go/random v0.0.0-20220630035504-d1da9a44093b/go.mod h1:Xu/gcZkIfrPdePTjCQDjTgERQ2vuTfbmINKCuGooHhU=
 github.com/irisnet/irismod-sdk-go/record v0.0.0-20220630035504-d1da9a44093b h1:AWSRcfopk+nG1CaDF+4JZ6rH573nZXbOfhu9jklSTlw=

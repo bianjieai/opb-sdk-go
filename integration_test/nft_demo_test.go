@@ -2,240 +2,144 @@ package integration_test
 
 import (
 	"fmt"
-	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
-	"github.com/irisnet/core-sdk-go/types"
 	"github.com/irisnet/core-sdk-go/types/query"
-	"github.com/irisnet/core-sdk-go/types/store"
 	"github.com/irisnet/irismod-sdk-go/nft"
-	"math/rand"
-	"strconv"
+	"github.com/stretchr/testify/require"
 	"testing"
-	"time"
 )
 
-func TestNftDemo(t *testing.T) {
-	fee, _ := types.ParseDecCoins("1upoint") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
-	// 初始化 SDK 配置
-	options := []types.Option{
-		types.AlgoOption("sm2"),
-		types.KeyDAOOption(store.NewMemory(nil)),
-		types.FeeOption(fee),
-		types.TimeoutOption(10),
-		types.CachedOption(true),
-	}
-	//cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "47.100.192.234:9090", "testing", options...)
-	cfg, err := types.NewClientConfig("http://localhost:26657", "localhost:9090", "irita-test", options...)
-	if err != nil {
-		panic(err)
-	}
+var pagination = query.PageRequest{
+	//Key:        []byte{1},
+	Offset:     0,
+	Limit:      10,
+	CountTotal: true,
+}
 
-	//// 初始化 OPB 网关账号（测试网环境设置为 nil 即可）
-	//authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
-	//
-	//// 开启 TLS 连接
-	//// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
-	//authToken.SetRequireTransportSecurity(false)
-	// 创建 OPB 客户端
-	//client := opb.NewClient(cfg, &authToken)
-	client := opb.NewClient(cfg, nil)
-
-	// 导入私钥
-	address, _ := client.Key.Recover("validator", "12345678", "tool clinic access federal flight egg sand lonely book aunt plastic lemon either diagram water betray life gaze spice upon kingdom much coyote flat")
-	fmt.Println("address:", address)
-	//address := "iaa14hdjjrpljywqrpmjefmn4e9umcu93s3eku7es7"
-	// 初始化 Tx 基础参数
-	baseTx := types.BaseTx{
-		From:     "validator", // 对应上面导入的私钥名称
-		Password: "12345678",  // 对应上面导入的私钥密码
-		Gas:      200000,      // 单 Tx 消耗的 Gas 上限
-		Memo:     "",          // Tx 备注
-		Mode:     types.Sync,  // Tx 广播模式
-	}
-	rand.Seed(time.Now().UnixNano())
-	denomID := "testdenom" + strconv.Itoa(rand.Intn(10000)) //资产的类别，全局唯一；长度为3到64，字母数字字符，以字母开始
-	denomName := "test_name"
-	schema := "no schema"
-	fmt.Println(denomID)
-	// 发行资产类别
+// 发行资产。
+func TestNftIssue(t *testing.T) {
+	denomID := "testnftdenomid"
+	denomName := "test_nft_denomName"
+	schema := ""
 	issueReq := nft.IssueDenomRequest{
-		ID:          denomID,
-		Name:        denomName,
-		Schema:      schema,
-		Symbol:      "symbol",
-		Description: "test_description",
-		Uri:         "https://www.baidu.com",
-		Data:        "any data",
+		ID:     denomID,
+		Name:   denomName,
+		Schema: schema,
 	}
-	nftDenomResult, err := client.NFT.IssueDenom(issueReq, baseTx)
-	if err != nil {
-		fmt.Println(fmt.Errorf("NFT 类别创建失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("NFT 类别创建成功 TxHash：", nftDenomResult.Hash)
-	}
+	res, err := txClient.NFT.IssueDenom(issueReq, baseTx)
+	require.NoError(t, err)
+	require.NotEmpty(t, res.Hash)
+	fmt.Println(res.Hash) //B43434AFD14780D0024AC13BDA08AE41CF6906BD16F61192EE360E6A262CF54B
+}
 
-	nftID := "test" + strconv.Itoa(rand.Intn(10000)) //资产的唯一 ID，如 UUID
-	fmt.Println(nftID)
+// 创建指定类别的具体资产。
+func TestNftMint(t *testing.T) {
+	tokenID := "testnfttokenid"
+	tokenName := "test_nft_tokenName"
+	tokenData := ""
+	denomID := "testnftdenomid"
 	mintReq := nft.MintNFTRequest{
 		Denom: denomID,
-		ID:    nftID,
-		Name:  "test_nftName",
+		ID:    tokenID,
+		Name:  tokenName,
 		URI:   "https://www.baidu.com",
-		Data:  "any data",
+		Data:  tokenData,
 	}
-	nftResult, err := client.NFT.MintNFT(mintReq, baseTx)
-	if err != nil {
-		fmt.Println(fmt.Errorf("NFT 创建失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("NFT 创建成功 TxHash：", nftResult.Hash)
-	}
+	res, err := txClient.NFT.MintNFT(mintReq, baseTx)
+	require.NoError(t, err)
+	require.NotEmpty(t, res.Hash)
+}
 
-	//editReq := nft.EditNFTRequest{
-	//	Denom: denomID,
-	//	ID:    nftID,
-	//	URI:   "https://www.baidu.com",
-	//}
-	//editNftResult, err := client.NFT.EditNFT(editReq, baseTx)
-	//if err != nil {
-	//	fmt.Println(fmt.Errorf("NFT 更新失败: %s", err.Error()))
-	//	return
-	//} else {
-	//	fmt.Println("NFT 更新成功 TxHash：", editNftResult.Hash)
-	//}
-
-	QueryNFTResult, err := client.NFT.QueryNFT(denomID, nftID)
-	if err != nil {
-		fmt.Println(fmt.Errorf("NFT 查询失败: %s", err.Error()))
-		//return
-	} else {
-		fmt.Println("NFT 查询成功：", QueryNFTResult)
+// 编辑指定的资产。可更新的属性包括：资产元数据、元数据 URI、URI 的哈希
+func TestNftEdit(t *testing.T) {
+	tokenID := "testnfttokenid"
+	denomID := "testnftdenomid"
+	editReq := nft.EditNFTRequest{
+		Denom: denomID,
+		ID:    tokenID,
+		URI:   "https://www.baidu.com",
 	}
+	res, err := txClient.NFT.EditNFT(editReq, baseTx)
+	require.NoError(t, err)
+	require.NotEmpty(t, res.Hash)
+}
 
-	supply, err := client.NFT.QuerySupply(denomID, "validator")
-	if err != nil {
-		fmt.Println(fmt.Errorf("supply 查询失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("supply 查询成功：", supply)
-	}
-	// 分页查询
-	pagination := query.PageRequest{
-		//Key: []byte{1},  //键值：与offset二选一
-		Offset:     0,     //偏移量：与key二选一
-		Limit:      5,     //默认100，最大值100
-		CountTotal: false, //是否查询总数量，目前仅支持false
-	}
-	owner, err := client.NFT.QueryOwner("validator", denomID, &pagination)
-	if err != nil {
-		fmt.Println(fmt.Errorf("owner 查询失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("owner 查询成功：", owner)
-	}
-
-	// 新建账户：接收者
-	uName := "test"
-	pwd := "12345678"
-
-	recipient, _, err := client.Add(uName, pwd)
-	if err != nil {
-		fmt.Println(fmt.Errorf("key 添加失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("key 添加成功：", recipient)
-	}
-
+// 转移指定资产。
+func TestNftTransfer(t *testing.T) {
+	recipient := address
+	tokenID := "testnfttokenid"
+	denomID := "testnftdenomid"
 	transferReq := nft.TransferNFTRequest{
 		Recipient: recipient,
 		Denom:     denomID,
-		ID:        nftID,
-		URI:       "",
+		ID:        tokenID,
+		URI:       "https://www.baidu.com",
 	}
-	res, err := client.NFT.TransferNFT(transferReq, baseTx)
-	if err != nil {
-		fmt.Println(fmt.Errorf("转移失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("转移成功：", res.Hash)
+	res, err := txClient.NFT.TransferNFT(transferReq, baseTx)
+	require.NoError(t, err)
+	require.NotEmpty(t, res.Hash)
+}
+
+// 销毁指定资产。
+func TestNftBurn(t *testing.T) {
+	tokenID := "testnfttokenid"
+	denomID := "testnftdenomid"
+	burnReq := nft.BurnNFTRequest{
+		Denom: denomID,
+		ID:    tokenID,
 	}
+	res, err := txClient.NFT.BurnNFT(burnReq, baseTx)
+	require.NoError(t, err)
+	require.NotEmpty(t, res.Hash)
+}
 
-	owner, err = client.NFT.QueryOwner(recipient, denomID, &pagination)
-	if err != nil {
-		fmt.Println(fmt.Errorf("owner 查询失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("owner 查询成功：", owner)
-	}
+// 查询指定类别和 ID 的资产。
+func TestNftToken(t *testing.T) {
+	tokenID := "testnfttokenid"
+	denomID := "testnftdenomid"
+	nftRes, err := txClient.NFT.QueryNFT(denomID, tokenID)
+	require.NoError(t, err)
+	fmt.Println(nftRes)
+}
 
-	supply, err = client.NFT.QuerySupply(denomID, recipient)
-	if err != nil {
-		fmt.Println(fmt.Errorf("supply 查询失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("supply 查询成功：", supply)
-	}
+// 查询指定类别的资产信息。
+func TestNftDenom(t *testing.T) {
+	denomID := "testnftdenomid"
+	denomRes, err := txClient.NFT.QueryDenom(denomID)
+	require.NoError(t, err)
+	fmt.Println(denomRes)
+}
 
-	denoms, err := client.NFT.QueryDenoms(&pagination)
-	if err != nil {
-		fmt.Println(fmt.Errorf("denoms 查询失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("denoms 查询成功：", denoms)
-	}
+// 查询所有类别的资产信息。
+func TestNftDenoms(t *testing.T) {
+	denoms, err := txClient.NFT.QueryDenoms(&pagination)
+	require.NoError(t, err)
+	require.NotEmpty(t, denoms)
+	fmt.Println(denoms)
+}
 
-	d, err := client.NFT.QueryDenom(denomID)
-	if err != nil {
-		fmt.Println(fmt.Errorf("denom 查询失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("denom 查询成功：", d)
-	}
+// 查询指定类别资产的总量。如 owner 被指定，则查询此 owner 所拥有的该类别资产的总量。
+func TestNftSupply(t *testing.T) {
+	recipient := address
+	denomID := "testnftdenomid"
+	supply, err := txClient.NFT.QuerySupply(denomID, recipient)
+	require.NoError(t, err)
+	require.Equal(t, uint64(1), supply)
+	fmt.Println(supply)
+}
 
-	col, err := client.NFT.QueryCollection(denomID, &pagination)
-	if err != nil {
-		fmt.Println(fmt.Errorf("Collection 查询失败: %s", err.Error()))
-		return
-	} else {
-		fmt.Println("Collection 查询成功：", col)
-	}
+// 查询指定账户的资产列表。如提供 denom，则查询该账户指定 denom 的资产列表。
+func TestNftOwner(t *testing.T) {
+	recipient := address
+	denomID := "testnftdenomid"
+	owner, err := txClient.NFT.QueryOwner(recipient, denomID, &pagination)
+	require.NoError(t, err)
+	fmt.Println(owner)
+}
 
-	//burnReq := nft.BurnNFTRequest{
-	//	Denom: mintReq.Denom,
-	//	ID:    mintReq.ID,
-	//}
-	//
-	//amount, e := types.ParseDecCoins("10uirita")
-	//if e!=nil{
-	//	fmt.Println(e)
-	//}
-	//_, err = client.Bank.Send(recipient, amount, baseTx)
-	//if err!=nil{
-	//	fmt.Println(err)
-	//}
-
-	//baseTx.From = uName
-	//baseTx.Password = pwd
-	//res, err = client.NFT.BurnNFT(burnReq, baseTx)
-	//if err != nil {
-	//	fmt.Println(fmt.Errorf("nft 销毁失败: %s", err.Error()))
-	//} else {
-	//	fmt.Println("nft 销毁成功：", res)
-	//}
-	//
-	//supply, err = client.NFT.QuerySupply(mintReq.Denom, transferReq.Recipient)
-	//if err != nil {
-	//	fmt.Println(fmt.Errorf("supply 查询失败: %s", err.Error()))
-	//} else {
-	//	fmt.Println("supply 查询成功：", supply)
-	//}
-
-	//test TransferDenom
-	//transferDenomReq := nft.TransferDenomRequest{
-	//	Recipient: recipient,
-	//	ID:        mintReq.ID,
-	//}
-	//res, err = s.NFT.TransferDenom(transferDenomReq, baseTx)
-	//require.NoError(s.T(), err)
-	//require.NotEmpty(s.T(), res.Hash)
+// 查询指定类别的所有资产。
+func TestNftCollection(t *testing.T) {
+	denomID := "testnftdenomid"
+	col, err := txClient.NFT.QueryCollection(denomID, &pagination)
+	require.NoError(t, err)
+	fmt.Println(col)
 }

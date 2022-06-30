@@ -29,7 +29,30 @@ func TestMtIssue(t *testing.T) {
 
 // 转移指定资产类别
 func TestMtTransferDenom(t *testing.T) {
+	denomID := "259edd57e552854d42bc4a0d98dc7a48fddeae343ad428c9df1d4b09e0ab525a"
+	recipient := address
+	transferReq := mt.TransferDenomRequest{
+		ID:        denomID,
+		Recipient: recipient,
+	}
+	res, err := txClient.MT.TransferDenom(transferReq, baseTx)
+	require.NoError(t, err)
+	require.NotEmpty(t, res.Hash)
+	fmt.Println(res.Hash)
+}
 
+// 销毁指定资产；可指定销毁数量。
+func TestMtBurn(t *testing.T) {
+	denomID := "259edd57e552854d42bc4a0d98dc7a48fddeae343ad428c9df1d4b09e0ab525a"
+	mtID := "f28fea81a5cdbb341979a9bb9b0c620226b8ba5077c49fb4a60d630b3a53a161"
+	burnMTReq := mt.BurnMTRequest{
+		ID:      mtID,
+		DenomID: denomID,
+		Amount:  3,
+	}
+	res, err := txClient.MT.BurnMT(burnMTReq, baseTx)
+	require.NoError(t, err)
+	require.NotEmpty(t, res.Hash)
 }
 
 // 创建指定类别的具体资产
@@ -83,4 +106,58 @@ func TestTransfer(t *testing.T) {
 	res, err := txClient.MT.TransferMT(transferMTReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+}
+
+// 根据 DenomID 查询资产类别信息。
+func TestMtDenom(t *testing.T) {
+	denom, err := txClient.MT.QueryDenom("259edd57e552854d42bc4a0d98dc7a48fddeae343ad428c9df1d4b09e0ab525a")
+	require.NoError(t, err)
+	require.NotEmpty(t, denom)
+	fmt.Println(denom)
+}
+
+// 查询所有资产类别的信息。
+func TestMtDenoms(t *testing.T) {
+	denoms, err := txClient.MT.QueryDenoms()
+	require.NoError(t, err)
+	require.NotEmpty(t, denoms)
+	fmt.Println(denoms)
+}
+
+// 根据 DenomID 和 MtID 查询指定资产总量。
+func TestMtSupply(t *testing.T) {
+	denomID := "259edd57e552854d42bc4a0d98dc7a48fddeae343ad428c9df1d4b09e0ab525a"
+	mtID := "f28fea81a5cdbb341979a9bb9b0c620226b8ba5077c49fb4a60d630b3a53a161"
+	mtSupply, err := txClient.MT.QueryMTSupply(denomID, mtID)
+	require.NoError(t, err)
+	require.Equal(t, uint64(10), mtSupply)
+}
+
+// 查询指定账户某类别中资产的总量。
+func TestMtBalances(t *testing.T) {
+	denomID := "259edd57e552854d42bc4a0d98dc7a48fddeae343ad428c9df1d4b09e0ab525a"
+	transferMTRecipient := address
+	balances, err := txClient.MT.QueryBalances(denomID, transferMTRecipient)
+	require.NoError(t, err)
+	require.NotEmpty(t, balances)
+	fmt.Println(balances)
+}
+
+// 根据 DenomID 以及 MtID 查询具体资产信息。
+func TestMtToken(t *testing.T) {
+	denomID := "259edd57e552854d42bc4a0d98dc7a48fddeae343ad428c9df1d4b09e0ab525a"
+	mtID := "f28fea81a5cdbb341979a9bb9b0c620226b8ba5077c49fb4a60d630b3a53a161"
+	mtSingle, err := txClient.MT.QueryMT(denomID, mtID)
+	require.NoError(t, err)
+	require.NotEmpty(t, mtSingle)
+	fmt.Println(mtSingle)
+}
+
+// 根据 DenomID 查询所有资产信息。
+func TestMtTokens(t *testing.T) {
+	denomID := "259edd57e552854d42bc4a0d98dc7a48fddeae343ad428c9df1d4b09e0ab525a"
+	mts, err := txClient.MT.QueryMTs(denomID)
+	require.NoError(t, err)
+	require.NotEmpty(t, mts)
+	fmt.Println(mts)
 }
