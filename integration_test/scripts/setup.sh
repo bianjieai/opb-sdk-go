@@ -1,1 +1,0 @@
-  cp -r ./scripts/node/ ~/.irita
