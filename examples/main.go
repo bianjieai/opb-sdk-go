@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/irisnet/irismod-sdk-go/mt"
+	"github.com/irisnet/irismod-sdk-go/nft"
+
 	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"github.com/irisnet/core-sdk-go/types"
 	"github.com/irisnet/core-sdk-go/types/store"
-	"github.com/irisnet/irismod-sdk-go/mt"
-	"github.com/irisnet/irismod-sdk-go/nft"
 	tendermintTypes "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -67,6 +68,19 @@ func main() {
 	} else {
 		fmt.Println("NFT 类别创建成功 TxHash：", nftResult.Hash)
 		hashArray = append(hashArray, nftResult.Hash)
+	}
+
+	// 创建 NFT
+	mintNFT, err := client.NFT.MintNFT(nft.MintNFTRequest{Denom: "testdenom", ID: "OpbTestName_1", Name: "aaa", URI: "www.baidu.com", Data: "test", Recipient: address}, baseTx)
+	if err != nil {
+		e := err.(types.Error)
+		if e.Codespace() == nft.ErrInvalidTokenID.Codespace() {
+			fmt.Println("Err code: ", e.Code())
+		}
+		fmt.Println(fmt.Errorf("NFT 创建失败: %s", err))
+	} else {
+		fmt.Println("NFT 创建成功 TxHash：", mintNFT.Hash)
+		hashArray = append(hashArray, mintNFT.Hash)
 	}
 
 	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：创建 MT 类别
