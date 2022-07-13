@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"github.com/irisnet/core-sdk-go/types"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -28,5 +29,7 @@ func TestSend(t *testing.T) {
 		return
 	} else {
 		fmt.Println("BANK 发送成功：", result.Hash)
+		e := syncTx(result.Hash)
+		require.NoError(t, e)
 	}
 }

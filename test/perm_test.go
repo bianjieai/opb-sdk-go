@@ -15,9 +15,12 @@ func TestPermAssignRoles(t *testing.T) {
 	}
 
 	// add role
-	rs, err := txClient.Perm.AssignRoles(roleAddress, roles, baseTx)
+	res, err := txClient.Perm.AssignRoles(roleAddress, roles, baseTx)
 	require.NoError(t, err)
-	require.NotEmpty(t, rs.Hash)
+	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // query role
@@ -34,17 +37,23 @@ func TestPermUnassignRoles(t *testing.T) {
 	roles := []perm.Role{
 		perm.RoleBlacklistAdmin,
 	}
-	rs, err := txClient.Perm.UnassignRoles(roleAddress, roles, baseTx)
+	res, err := txClient.Perm.UnassignRoles(roleAddress, roles, baseTx)
 	require.NoError(t, err)
-	require.NotEmpty(t, rs.Hash)
+	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // block account
 func TestPermBlockAccount(t *testing.T) {
 	accountAddress := "iaa1ctagfms5nnn4r8tgvk8cy742jgecpvpnle2ktj"
-	rs, err := txClient.Perm.BlockAccount(accountAddress, baseTx)
+	res, err := txClient.Perm.BlockAccount(accountAddress, baseTx)
 	require.NoError(t, err)
-	require.NotEmpty(t, rs.Hash)
+	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // query blacklist
@@ -57,7 +66,10 @@ func TestPermQueryAccountBlockList(t *testing.T) {
 // unblock blacklist
 func TestPermUnblockAccount(t *testing.T) {
 	accountAddress := "iaa1ctagfms5nnn4r8tgvk8cy742jgecpvpnle2ktj"
-	rs, err := txClient.Perm.UnblockAccount(accountAddress, baseTx)
+	res, err := txClient.Perm.UnblockAccount(accountAddress, baseTx)
 	require.NoError(t, err)
-	require.NotEmpty(t, rs.Hash)
+	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }

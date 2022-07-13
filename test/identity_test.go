@@ -38,6 +38,9 @@ func TestCreateIdentidy(t *testing.T) {
 	res, err := txClient.Identity.CreateIdentity(req, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 func TestUpdateIdentity(t *testing.T) {
@@ -59,4 +62,7 @@ func TestUpdateIdentity(t *testing.T) {
 	res, err := txClient.Identity.UpdateIdentity(req, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }

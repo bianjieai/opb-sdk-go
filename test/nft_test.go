@@ -2,18 +2,10 @@ package test
 
 import (
 	"fmt"
-	"github.com/irisnet/core-sdk-go/types/query"
 	"github.com/irisnet/irismod-sdk-go/nft"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
-
-var pagination = query.PageRequest{
-	//Key:        []byte{1},
-	Offset:     0,
-	Limit:      10,
-	CountTotal: true,
-}
 
 // 发行资产。
 func TestNftIssue(t *testing.T) {
@@ -28,7 +20,9 @@ func TestNftIssue(t *testing.T) {
 	res, err := txClient.NFT.IssueDenom(issueReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
-	fmt.Println(res.Hash) //B43434AFD14780D0024AC13BDA08AE41CF6906BD16F61192EE360E6A262CF54B
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // 创建指定类别的具体资产。
@@ -61,6 +55,9 @@ func TestNftEdit(t *testing.T) {
 	res, err := txClient.NFT.EditNFT(editReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // 转移指定资产。
@@ -77,6 +74,9 @@ func TestNftTransfer(t *testing.T) {
 	res, err := txClient.NFT.TransferNFT(transferReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // 销毁指定资产。
@@ -90,6 +90,9 @@ func TestNftBurn(t *testing.T) {
 	res, err := txClient.NFT.BurnNFT(burnReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // 查询指定类别和 ID 的资产。
@@ -111,7 +114,7 @@ func TestNftDenom(t *testing.T) {
 
 // 查询所有类别的资产信息。
 func TestNftDenoms(t *testing.T) {
-	denoms, err := txClient.NFT.QueryDenoms(&pagination)
+	denoms, err := txClient.NFT.QueryDenoms(pagination)
 	require.NoError(t, err)
 	require.NotEmpty(t, denoms)
 	fmt.Println(denoms)
@@ -131,7 +134,7 @@ func TestNftSupply(t *testing.T) {
 func TestNftOwner(t *testing.T) {
 	recipient := address
 	denomID := "testnftdenomid"
-	owner, err := txClient.NFT.QueryOwner(recipient, denomID, &pagination)
+	owner, err := txClient.NFT.QueryOwner(recipient, denomID, pagination)
 	require.NoError(t, err)
 	fmt.Println(owner)
 }
@@ -139,7 +142,7 @@ func TestNftOwner(t *testing.T) {
 // 查询指定类别的所有资产。
 func TestNftCollection(t *testing.T) {
 	denomID := "testnftdenomid"
-	col, err := txClient.NFT.QueryCollection(denomID, &pagination)
+	col, err := txClient.NFT.QueryCollection(denomID, pagination)
 	require.NoError(t, err)
 	fmt.Println(col)
 }

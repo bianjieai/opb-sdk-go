@@ -1,16 +1,29 @@
 package test
 
 import (
+	"fmt"
+	"github.com/avast/retry-go"
 	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/client"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"github.com/irisnet/core-sdk-go/types"
+	"github.com/irisnet/core-sdk-go/types/query"
 	"github.com/irisnet/core-sdk-go/types/store"
+	tendermintTypes "github.com/tendermint/tendermint/abci/types"
+	"time"
 )
 
 var txClient client.Client
 var baseTx types.BaseTx
 var address string
+
+// 分页查询参数
+var pagination = &query.PageRequest{
+	//Key: []byte{1}, // 下标，与Offset二选一
+	Offset:     0,     // 偏移量，与Key二选一
+	Limit:      0,     // 查询数量：最大值100
+	CountTotal: false, // 是否查询总数：目前仅支持false
+}
 
 func init() {
 	fee, _ := types.ParseDecCoins("300000ugas") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
@@ -46,4 +59,21 @@ func init() {
 		Memo:     "",              // Tx 备注
 		Mode:     types.Commit,    // Tx 广播模式
 	}
+}
+
+// 异步模式上链
+func syncTx(txHash string) error {
+	err := retry.Do(func() error {
+		tx, err := txClient.QueryTx(txHash)
+		if err != nil {
+			return err
+		}
+		if tx.Result.Code == tendermintTypes.CodeTypeOK {
+			fmt.Println("交易上链成功，交易哈希:", txHash)
+		} else {
+			fmt.Printf("交易上链失败，交易哈希:%s， 错误:%s. \n", txHash, tx.Result.Log)
+		}
+		return nil
+	}, retry.Attempts(3), retry.Delay(2*time.Second))
+	return err
 }

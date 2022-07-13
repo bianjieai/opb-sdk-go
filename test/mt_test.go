@@ -20,11 +20,13 @@ func TestMtIssue(t *testing.T) {
 	res, err := txClient.MT.IssueDenom(issueReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
-	fmt.Println(res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 	denomID, err2 := res.Events.GetValue("issue_denom", "denom_id")
 	require.NoError(t, err2)
 	require.NotEmpty(t, denomID)
-	fmt.Println(denomID) //259edd57e552854d42bc4a0d98dc7a48fddeae343ad428c9df1d4b09e0ab525a
+	fmt.Println(denomID)
 }
 
 // 转移指定资产类别
@@ -38,7 +40,9 @@ func TestMtTransferDenom(t *testing.T) {
 	res, err := txClient.MT.TransferDenom(transferReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
-	fmt.Println(res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // 销毁指定资产；可指定销毁数量。
@@ -53,6 +57,9 @@ func TestMtBurn(t *testing.T) {
 	res, err := txClient.MT.BurnMT(burnMTReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // 创建指定类别的具体资产
@@ -69,9 +76,12 @@ func TestMtMint(t *testing.T) {
 	res, err := txClient.MT.MintMT(mintReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 	mtID, err2 := res.Events.GetValue("mint_mt", "mt_id")
 	require.NoError(t, err2)
-	fmt.Println(mtID) //f28fea81a5cdbb341979a9bb9b0c620226b8ba5077c49fb4a60d630b3a53a161
+	fmt.Println(mtID)
 }
 
 // 编辑指定的资产。
@@ -86,6 +96,9 @@ func TestMtEdit(t *testing.T) {
 	res, err := txClient.MT.EditMT(editReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // 转移指定资产；可指定转移数量。
@@ -106,6 +119,9 @@ func TestTransfer(t *testing.T) {
 	res, err := txClient.MT.TransferMT(transferMTReq, baseTx)
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Hash)
+	// sync 模式异步上链
+	e := syncTx(res.Hash)
+	require.NoError(t, e)
 }
 
 // 根据 DenomID 查询资产类别信息。
@@ -118,7 +134,7 @@ func TestMtDenom(t *testing.T) {
 
 // 查询所有资产类别的信息。
 func TestMtDenoms(t *testing.T) {
-	denoms, err := txClient.MT.QueryDenoms()
+	denoms, err := txClient.MT.QueryDenoms(pagination)
 	require.NoError(t, err)
 	require.NotEmpty(t, denoms)
 	fmt.Println(denoms)
@@ -156,7 +172,7 @@ func TestMtToken(t *testing.T) {
 // 根据 DenomID 查询所有资产信息。
 func TestMtTokens(t *testing.T) {
 	denomID := "259edd57e552854d42bc4a0d98dc7a48fddeae343ad428c9df1d4b09e0ab525a"
-	mts, err := txClient.MT.QueryMTs(denomID)
+	mts, err := txClient.MT.QueryMTs(denomID, pagination)
 	require.NoError(t, err)
 	require.NotEmpty(t, mts)
 	fmt.Println(mts)

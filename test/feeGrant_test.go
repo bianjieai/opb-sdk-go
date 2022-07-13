@@ -6,10 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/avast/retry-go"
 	"github.com/stretchr/testify/require"
-
-	tendermintTypes "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/irisnet/core-sdk-go/feegrant"
 	"github.com/irisnet/core-sdk-go/types"
@@ -21,20 +18,11 @@ var grantee types.AccAddress
 
 func init() {
 	// 导入私钥
-	address, _ := txClient.Key.Recover("test_key_name", "test_password", "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic")
-	granter, _ = types.AccAddressFromBech32(address)
+	granterAddr, _ := txClient.Key.Recover("test_key_name", "test_password", "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic")
+	granter, _ = types.AccAddressFromBech32(granterAddr)
 
 	granteeAddr, _, _ := txClient.Key.Add("test_grantee", "12345678")
 	grantee, _ = types.AccAddressFromBech32(granteeAddr)
-
-	// 初始化 Tx 基础参数
-	baseTx = types.BaseTx{
-		From:     "test_key_name", // 对应上面导入的私钥名称
-		Password: "test_password", // 对应上面导入的私钥密码
-		Gas:      200000,          // 单 Tx 消耗的 Gas 上限
-		Memo:     "",              // Tx 备注
-		Mode:     types.Sync,      // Tx 广播模式
-	}
 
 }
 
@@ -51,15 +39,8 @@ func TestGrantAllowance(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, result.Hash)
 	// sync 模式异步上链
-	err2 := retry.Do(func() error {
-		tx, err2 := txClient.QueryTx(result.Hash)
-		if err2 != nil {
-			return err2
-		}
-		require.Equal(t, tx.Result.Code, tendermintTypes.CodeTypeOK, tx.Result.Log)
-		return nil
-	}, retry.Attempts(3), retry.Delay(2*time.Second))
-	require.NoError(t, err2)
+	e := syncTx(result.Hash)
+	require.NoError(t, e)
 }
 
 //设置交易代扣
@@ -71,15 +52,8 @@ func TestFeeGrant(t *testing.T) {
 	}, baseTx)
 	require.NoError(t, err)
 	// sync 模式异步上链
-	retryErr := retry.Do(func() error {
-		tx, err2 := txClient.QueryTx(resultTx.Hash)
-		if err2 != nil {
-			return err2
-		}
-		require.Equal(t, tx.Result.Code, tendermintTypes.CodeTypeOK, tx.Result.Log)
-		return nil
-	}, retry.Attempts(3), retry.Delay(2*time.Second))
-	require.NoError(t, retryErr)
+	e := syncTx(resultTx.Hash)
+	require.NoError(t, e)
 
 	// 记录授权方现有余额
 	granterAcc, err := txClient.Bank.QueryAccount(granter.String())
@@ -104,15 +78,8 @@ func TestFeeGrant(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, nftResult.Hash)
 	// sync 模式异步上链
-	retryErr = retry.Do(func() error {
-		tx, err2 := txClient.QueryTx(nftResult.Hash)
-		if err2 != nil {
-			return err2
-		}
-		require.Equal(t, tx.Result.Code, tendermintTypes.CodeTypeOK, tx.Result.Log)
-		return nil
-	}, retry.Attempts(3), retry.Delay(2*time.Second))
-	require.NoError(t, retryErr)
+	e = syncTx(nftResult.Hash)
+	require.NoError(t, e)
 
 	// 查询授权方账户现有余额
 	newGranterAcc, err := txClient.Bank.QueryAccount(granter.String())
@@ -129,13 +96,6 @@ func TestRevokeAllowance(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, result.Hash)
 	// sync 模式异步上链
-	err2 := retry.Do(func() error {
-		tx, err2 := txClient.QueryTx(result.Hash)
-		if err2 != nil {
-			return err2
-		}
-		require.Equal(t, tx.Result.Code, tendermintTypes.CodeTypeOK, tx.Result.Log)
-		return nil
-	}, retry.Attempts(3), retry.Delay(2*time.Second))
-	require.NoError(t, err2)
+	e := syncTx(result.Hash)
+	require.NoError(t, e)
 }
