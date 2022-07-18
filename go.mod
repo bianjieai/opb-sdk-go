@@ -7,12 +7,12 @@ require (
 	github.com/bianjieai/iritamod-sdk-go v0.0.0-20220708032705-9e8e301da3a8
 	github.com/cosmos/cosmos-sdk v0.45.5 // indirect
 	github.com/irisnet/core-sdk-go v0.0.0-20220712024726-6d9d3db01194
-	github.com/irisnet/irismod-sdk-go/mt v0.0.0-20220712105138-08d32191fc38
-	github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220712105138-08d32191fc38
-	github.com/irisnet/irismod-sdk-go/random v0.0.0-20220712105138-08d32191fc38
-	github.com/irisnet/irismod-sdk-go/record v0.0.0-20220712105138-08d32191fc38
-	github.com/irisnet/irismod-sdk-go/service v0.0.0-20220712105138-08d32191fc38
-	github.com/irisnet/irismod-sdk-go/token v0.0.0-20220712105138-08d32191fc38
+	github.com/irisnet/irismod-sdk-go/mt v0.0.0-20220715120129-3c858f430558
+	github.com/irisnet/irismod-sdk-go/nft v0.0.0-20220715120129-3c858f430558
+	github.com/irisnet/irismod-sdk-go/random v0.0.0-20220715120129-3c858f430558
+	github.com/irisnet/irismod-sdk-go/record v0.0.0-20220715120129-3c858f430558
+	github.com/irisnet/irismod-sdk-go/service v0.0.0-20220715120129-3c858f430558
+	github.com/irisnet/irismod-sdk-go/token v0.0.0-20220715120129-3c858f430558
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.19
 	google.golang.org/grpc v1.45.0
