@@ -11,16 +11,11 @@ import (
 	cryptocodec "github.com/irisnet/core-sdk-go/common/crypto/codec"
 	"github.com/irisnet/core-sdk-go/types"
 	txtypes "github.com/irisnet/core-sdk-go/types/tx"
-	"github.com/irisnet/irismod-sdk-go/coinswap"
-	"github.com/irisnet/irismod-sdk-go/gov"
-	"github.com/irisnet/irismod-sdk-go/htlc"
 	"github.com/irisnet/irismod-sdk-go/mt"
 	"github.com/irisnet/irismod-sdk-go/nft"
-	"github.com/irisnet/irismod-sdk-go/oracle"
 	"github.com/irisnet/irismod-sdk-go/random"
 	"github.com/irisnet/irismod-sdk-go/record"
 	"github.com/irisnet/irismod-sdk-go/service"
-	"github.com/irisnet/irismod-sdk-go/staking"
 	"github.com/irisnet/irismod-sdk-go/token"
 	"github.com/tendermint/tendermint/libs/log"
 )
@@ -33,16 +28,11 @@ type Client struct {
 	types.BaseClient
 	Bank    bank.Client
 	Token   token.Client
-	Staking staking.Client
-	Gov     gov.Client
 	Service service.Client
 	Record  record.Client
 	Random  random.Client
 	NFT     nft.Client
 	MT      mt.Client
-	Oracle  oracle.Client
-	HTLC    htlc.Client
-	Swap    coinswap.Client
 
 	Identity identity.Client
 	Perm     perm.Client
@@ -57,15 +47,10 @@ func NewClient(cfg types.ClientConfig) Client {
 	baseClient := client.NewBaseClient(cfg, encodingConfig, nil)
 	bankClient := bank.NewClient(baseClient, encodingConfig.Marshaler)
 	tokenClient := token.NewClient(baseClient, encodingConfig.Marshaler)
-	stakingClient := staking.NewClient(baseClient, encodingConfig.Marshaler)
-	govClient := gov.NewClient(baseClient, encodingConfig.Marshaler)
 	serviceClient := service.NewClient(baseClient, encodingConfig.Marshaler)
 	recordClient := record.NewClient(baseClient, encodingConfig.Marshaler)
 	nftClient := nft.NewClient(baseClient, encodingConfig.Marshaler)
 	randomClient := random.NewClient(baseClient, encodingConfig.Marshaler)
-	oracleClient := oracle.NewClient(baseClient, encodingConfig.Marshaler)
-	htlcClient := htlc.NewClient(baseClient, encodingConfig.Marshaler)
-	swapClient := coinswap.NewClient(baseClient, encodingConfig.Marshaler, bankClient.TotalSupply)
 	mtClient := mt.NewClient(baseClient, encodingConfig.Marshaler)
 
 	idClient := identity.NewClient(baseClient, encodingConfig.Marshaler)
@@ -80,15 +65,10 @@ func NewClient(cfg types.ClientConfig) Client {
 		encodingConfig: encodingConfig,
 		Bank:           bankClient,
 		Token:          tokenClient,
-		Staking:        stakingClient,
-		Gov:            govClient,
 		Service:        serviceClient,
 		Record:         recordClient,
 		Random:         randomClient,
 		NFT:            nftClient,
-		Oracle:         oracleClient,
-		HTLC:           htlcClient,
-		Swap:           swapClient,
 		MT:             mtClient,
 		Identity:       idClient,
 		Perm:           permClient,
@@ -98,15 +78,10 @@ func NewClient(cfg types.ClientConfig) Client {
 	sdkClient.RegisterModule(
 		bankClient,
 		tokenClient,
-		stakingClient,
-		govClient,
 		serviceClient,
 		recordClient,
 		nftClient,
 		randomClient,
-		oracleClient,
-		htlcClient,
-		swapClient,
 		mtClient,
 		idClient,
 		permClient,
