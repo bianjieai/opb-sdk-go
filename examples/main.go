@@ -54,7 +54,7 @@ func main() {
 	var hashArray []string
 
 	// 使用 Client 选择对应的功能模块，查询链上状态；例：查询账户信息
-	acc, err := client.Bank.QueryAccount("iaa1lxvmp9h0v0dhzetmhstrmw3ecpplp5tljnr35f")
+	acc, err := client.Bank.QueryAccount(address)
 	if err != nil {
 		fmt.Println(fmt.Errorf("账户查询失败: %s", err.Error()))
 	} else {
@@ -68,6 +68,19 @@ func main() {
 	} else {
 		fmt.Println("NFT 类别创建成功 TxHash：", nftResult.Hash)
 		hashArray = append(hashArray, nftResult.Hash)
+	}
+
+	// 创建 NFT
+	mintNFT, err := client.NFT.MintNFT(nft.MintNFTRequest{Denom: "testdenom", ID: "OpbTestName_1", Name: "aaa", URI: "www.baidu.com", Data: "test", Recipient: address}, baseTx)
+	if err != nil {
+		e := err.(types.Error)
+		if e.Codespace() == nft.ErrInvalidTokenID.Codespace() {
+			fmt.Println("Err code: ", e.Code())
+		}
+		fmt.Println(fmt.Errorf("NFT 创建失败: %s", err))
+	} else {
+		fmt.Println("NFT 创建成功 TxHash：", mintNFT.Hash)
+		hashArray = append(hashArray, mintNFT.Hash)
 	}
 
 	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：创建 MT 类别

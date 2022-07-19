@@ -48,6 +48,7 @@ func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) client.Client
 			httpHeader.Set("x-api-key", authToken.GetProjectKey())
 		}
 	}
+	cfg.Header = httpHeader
 
 	return client.NewClient(cfg)
 }
