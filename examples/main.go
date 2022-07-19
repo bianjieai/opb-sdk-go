@@ -101,6 +101,25 @@ func main() {
 		hashArray = append(hashArray, result.Hash)
 	}
 
+	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：创建存证
+	req := record.CreateRecordRequest{
+		Contents: []record.Content{
+			{
+				Digest:     "digest", //存证元数据摘要
+				DigestAlgo: "sha256", //存证元数据摘要的生成算法
+				URI:        "www.baidu.com",
+				Meta:       "tx", //源数据
+			},
+		},
+	}
+	recordResult, err := client.Record.CreateRecord(req, baseTx)
+	if err != nil {
+		fmt.Println(fmt.Errorf("存证创建失败: %s", err.Error()))
+	} else {
+		fmt.Println("存证发送成功：", recordResult.Hash)
+		hashArray = append(hashArray, recordResult.Hash)
+	}
+
 	// 等待十秒后查询交易
 	time.Sleep(time.Second * 10)
 	for _, hash := range hashArray {
@@ -126,24 +145,4 @@ func main() {
 		fmt.Println("区块订阅成功：", subs.ID)
 	}
 	time.Sleep(time.Second * 20)
-
-	//创建存证
-	req := record.CreateRecordRequest{
-		Contents: []record.Content{
-			{
-				Digest:     "digest", //存证元数据摘要
-				DigestAlgo: "sha256", //存证元数据摘要的生成算法
-				URI:        "1231321",
-				Meta:       "tx", //源数据
-			},
-		},
-	}
-	recordResp, err := client.Record.CreateRecord(req, baseTx)
-	if err != nil {
-		fmt.Println(fmt.Errorf("存证创建失败: %s", err.Error()))
-	}
-	fmt.Println(recordResp.RecordId)
-	fmt.Println(recordResp.Hash)
-	fmt.Println(recordResp)
-
 }
