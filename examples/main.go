@@ -2,35 +2,69 @@ package main
 
 import (
 	"fmt"
-	"github.com/irisnet/irismod-sdk-go/record"
 	"time"
+
+	"github.com/irisnet/irismod-sdk-go/mt"
+	"github.com/irisnet/irismod-sdk-go/nft"
+
+	"github.com/irisnet/irismod-sdk-go/record"
 
 	opb "github.com/bianjieai/opb-sdk-go/pkg/app/sdk"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"github.com/irisnet/core-sdk-go/types"
 	"github.com/irisnet/core-sdk-go/types/store"
-	"github.com/irisnet/irismod-sdk-go/mt"
-	"github.com/irisnet/irismod-sdk-go/nft"
 	tendermintTypes "github.com/tendermint/tendermint/abci/types"
 )
 
+// 主网使用的配置
+//var (
+//	wsAddress   = fmt.Sprintf("%s/api/%s/ws", "wss://opbningxia.bsngate.com:18602", projectId)
+//	rpcAddress  = fmt.Sprintf("%s/api/%s/rpc", "https://opbningxia.bsngate.com:18602", projectId)
+//	grpcAddress = "opbningxia.bsngate.com:18603"
+//	chainID     = "wenchangchain"
+//
+//	algo             = ""
+//	projectId        = ""
+//	projectKey       = ""
+//	chainAccountAddr = ""
+//	name             = ""
+//	password         = ""
+//	mnemonic         = ""
+//)
+
+// 测试链使用的配置
+var (
+	rpcAddress  = "http://47.100.192.234:26657"
+	grpcAddress = "47.100.192.234:9090"
+	chainID     = "testing"
+
+	algo             = "sm2"
+	projectId        = "TestProjectID"
+	projectKey       = "TestProjectKey"
+	chainAccountAddr = "TestChainAccountAddress"
+	name             = "test_key_name"
+	password         = "test_password"
+	mnemonic         = "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic"
+)
+
 func main() {
-	fee, _ := types.ParseDecCoins("300000ugas") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
+	fee, _ := types.ParseDecCoins("200000ugas") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
 	// 初始化 SDK 配置
 	options := []types.Option{
-		types.AlgoOption("sm2"),
+		types.AlgoOption(algo),
 		types.KeyDAOOption(store.NewMemory(nil)),
 		types.FeeOption(fee),
 		types.TimeoutOption(10),
 		types.CachedOption(true),
+		//types.WSAddrOption(wsAddress),
 	}
-	cfg, err := types.NewClientConfig("http://47.100.192.234:26657", "47.100.192.234:9090", "testing", options...)
+	cfg, err := types.NewClientConfig(rpcAddress, grpcAddress, chainID, options...)
 	if err != nil {
 		panic(err)
 	}
 
 	// 初始化 OPB 网关账号（测试网环境设置为 nil 即可）
-	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
+	authToken := model.NewAuthToken(projectId, projectKey, chainAccountAddr)
 
 	// 开启 TLS 连接
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
@@ -39,16 +73,17 @@ func main() {
 	client := opb.NewClient(cfg, &authToken)
 
 	// 导入私钥
-	address, _ := client.Key.Recover("test_key_name", "test_password", "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic")
+	address, err := client.Key.Recover(name, password, mnemonic)
 	fmt.Println("address:", address)
 
 	// 初始化 Tx 基础参数
 	baseTx := types.BaseTx{
-		From:     "test_key_name", // 对应上面导入的私钥名称
-		Password: "test_password", // 对应上面导入的私钥密码
-		Gas:      200000,          // 单 Tx 消耗的 Gas 上限
-		Memo:     "",              // Tx 备注
-		Mode:     types.Sync,      // Tx 广播模式
+		From:     name,       // 对应上面导入的私钥名称
+		Password: password,   // 对应上面导入的私钥密码
+		Gas:      200000,     // 单 Tx 消耗的 Gas 上限
+		Memo:     "",         // Tx 备注
+		Mode:     types.Sync, // Tx 广播模式
+		//SimulateAndExecute: true,       // 模拟执行
 	}
 	// 初始化交易哈希查询队列
 	var hashArray []string
