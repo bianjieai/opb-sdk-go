@@ -74,6 +74,10 @@ func main() {
 
 	// 导入私钥
 	address, err := client.Key.Recover(name, password, mnemonic)
+	if err != nil {
+		fmt.Println(fmt.Errorf("导入私钥失败: %s", err.Error()))
+		return
+	}
 	fmt.Println("address:", address)
 
 	// 初始化 Tx 基础参数
@@ -83,7 +87,6 @@ func main() {
 		Gas:      200000,     // 单 Tx 消耗的 Gas 上限
 		Memo:     "",         // Tx 备注
 		Mode:     types.Sync, // Tx 广播模式
-		//SimulateAndExecute: true,       // 模拟执行
 	}
 	// 初始化交易哈希查询队列
 	var hashArray []string
