@@ -16,7 +16,7 @@ replace (
 )
 
 require (
-	github.com/irisnet/core-sdk-go v0.0.0-20220712024726-6d9d3db01194
+	github.com/irisnet/core-sdk-go v0.0.0-20220720085949-4d825adb8054
 	github.com/irisnet/irismod-sdk-go v0.0.0-20220719033134-21949affca52
 	github.com/bianjieai/iritamod-sdk-go v0.0.0-20220708032705-9e8e301da3a8
 	github.com/stretchr/testify v1.7.0
