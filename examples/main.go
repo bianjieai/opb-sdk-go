@@ -34,8 +34,9 @@ import (
 
 // 测试链使用的配置
 var (
-	rpcAddress  = "http://47.100.192.234:26657"
-	grpcAddress = "47.100.192.234:9090"
+	wsAddress   = ""
+	rpcAddress  = "http://testnet.bianjie.ai:26657"
+	grpcAddress = "testnet.bianjie.ai:9090"
 	chainID     = "testing"
 
 	algo             = "sm2"
@@ -48,7 +49,7 @@ var (
 )
 
 func main() {
-	fee, _ := types.ParseDecCoins("200000ugas") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
+	fee, _ := types.ParseDecCoins("400000ugas") // 设置文昌链主网的默认费用，20W不够就填40W
 	// 初始化 SDK 配置
 	options := []types.Option{
 		types.AlgoOption(algo),
@@ -56,7 +57,7 @@ func main() {
 		types.FeeOption(fee),
 		types.TimeoutOption(10),
 		types.CachedOption(true),
-		//types.WSAddrOption(wsAddress),
+		types.WSAddrOption(wsAddress),
 	}
 	cfg, err := types.NewClientConfig(rpcAddress, grpcAddress, chainID, options...)
 	if err != nil {
@@ -84,7 +85,7 @@ func main() {
 	baseTx := types.BaseTx{
 		From:     name,       // 对应上面导入的私钥名称
 		Password: password,   // 对应上面导入的私钥密码
-		Gas:      200000,     // 单 Tx 消耗的 Gas 上限
+		Gas:      400000,     // 单 Tx 消耗的 Gas 上限
 		Memo:     "",         // Tx 备注
 		Mode:     types.Sync, // Tx 广播模式
 	}
@@ -108,8 +109,8 @@ func main() {
 		hashArray = append(hashArray, nftResult.Hash)
 	}
 
-	// 创建 NFT
-	mintNFT, err := client.NFT.MintNFT(nft.MintNFTRequest{Denom: "testdenom", ID: "OpbTestName_1", Name: "aaa", URI: "www.baidu.com", Data: "test", Recipient: address}, baseTx)
+	// 例：创建 NFT
+	mintNFT, err := client.NFT.MintNFT(nft.MintNFTRequest{Denom: "testdenom", ID: "testnft1", Name: "aaa", URI: "www.test.com", Data: "test", Recipient: address}, baseTx)
 	if err != nil {
 		e := err.(types.Error)
 		if e.Codespace() == nft.ErrInvalidTokenID.Codespace() {
@@ -128,6 +129,15 @@ func main() {
 	} else {
 		fmt.Println("MT 类别创建成功 TxHash：", mtResult.Hash)
 		hashArray = append(hashArray, mtResult.Hash)
+	}
+
+	// 例：增发 MT
+	addMT, err := client.MT.AddMT(mt.AddMTRequest{ID: "c54e89be44edfd421678d4a504f6c5f110878f52883d19935fb412107168015f", DenomID: "a6a8dabe077c23054a582f8ff9847e52f95385c342aa80b8b662eeb5b8f24b19", Amount: 100}, baseTx)
+	if err != nil {
+		fmt.Println(fmt.Errorf("MT 增发失败: %s", err.Error()))
+	} else {
+		fmt.Println("MT 增发成功 TxHash：", addMT.Hash)
+		hashArray = append(hashArray, addMT.Hash)
 	}
 
 	// 使用 Client 选择对应的功能模块，构造、签名并发送交易；例：BANK 发送交易
