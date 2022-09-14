@@ -9,10 +9,11 @@ type AuthToken struct {
 	projectKey       string
 	chainAccountAddr string
 	enableTLS        bool
+	tlsServerName    string
 }
 
 func NewAuthToken(projectID, projectKey, chainAccountAddr string) AuthToken {
-	return AuthToken{projectID, projectKey, chainAccountAddr, true}
+	return AuthToken{projectID, projectKey, chainAccountAddr, true, "bsngate.com"}
 }
 
 func (a *AuthToken) GetRequestMetadata(context.Context, ...string) (
@@ -43,4 +44,12 @@ func (a *AuthToken) GetChainAccountAddr() string {
 
 func (a *AuthToken) GetEnableTLS() bool {
 	return a.enableTLS
+}
+
+func (a *AuthToken) SetTLSServerName(tlsServerName string) {
+	a.tlsServerName = tlsServerName
+}
+
+func (a *AuthToken) GetTLSServerName() string {
+	return a.tlsServerName
 }
