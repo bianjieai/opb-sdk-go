@@ -28,7 +28,7 @@ func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) client.Client
 			for i := range certificateList {
 				roots.AddCert(certificateList[i])
 			}
-			cert := credentials.NewClientTLSFromCert(roots, "bsngate.com")
+			cert := credentials.NewClientTLSFromCert(roots, authToken.GetDomain())
 			// overwrite grpcOpts
 			grpcOpts := []grpc.DialOption{
 				grpc.WithPerRPCCredentials(authToken),
