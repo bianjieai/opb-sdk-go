@@ -9,7 +9,7 @@ type AuthToken struct {
 	projectKey       string
 	chainAccountAddr string
 	enableTLS        bool
-	tlsServerName    string
+	domain           string
 }
 
 func NewAuthToken(projectID, projectKey, chainAccountAddr string) AuthToken {
@@ -46,10 +46,10 @@ func (a *AuthToken) GetEnableTLS() bool {
 	return a.enableTLS
 }
 
-func (a *AuthToken) SetTLSServerName(tlsServerName string) {
-	a.tlsServerName = tlsServerName
+func (a *AuthToken) SetDomain(domain string) {
+	a.domain = domain
 }
 
-func (a *AuthToken) GetTLSServerName() string {
-	return a.tlsServerName
+func (a *AuthToken) GetDomain() string {
+	return a.domain
 }

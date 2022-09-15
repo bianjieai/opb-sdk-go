@@ -71,7 +71,7 @@ func main() {
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
 	authToken.SetRequireTransportSecurity(false)
 	// 若开启 TLS 连接，此处可设置验证证书的主机名；默认 bsngate.com
-	authToken.SetTLSServerName("bsngate.com")
+	authToken.SetDomain("bsngate.com")
 	// 创建 OPB 客户端
 	client := opb.NewClient(cfg, &authToken)
 
