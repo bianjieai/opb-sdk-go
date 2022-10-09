@@ -15,7 +15,8 @@ import (
 )
 
 func main() {
-	fee, _ := types.ParseDecCoins("300000ugas") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
+	//能量值费用：「创建NFT/MT类别」、「发行NFT/MT」为 40 万能量值（等值人民币：0.1元），其他交易类型为 20 万能量值（等值人民币：0.05元）
+	fee, _ := types.ParseDecCoins("400000ugas") // 设置文昌链主网的默认费用，10W不够就填20W，30W....
 	// 初始化 SDK 配置
 	options := []types.Option{
 		types.AlgoOption("sm2"),
@@ -46,7 +47,7 @@ func main() {
 	baseTx := types.BaseTx{
 		From:     "test_key_name", // 对应上面导入的私钥名称
 		Password: "test_password", // 对应上面导入的私钥密码
-		Gas:      200000,          // 单 Tx 消耗的 Gas 上限
+		Gas:      400000,          // 单 Tx 消耗的 Gas 上限
 		Memo:     "",              // Tx 备注
 		Mode:     types.Sync,      // Tx 广播模式
 	}
