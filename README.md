@@ -48,7 +48,8 @@ import (
 )
 
 func main() {
-	fee, _ := types.ParseDecCoins("400000ugas") // 设置文昌链主网的默认费用，20W不够就填40W
+	//能量值费用：「创建NFT/MT类别」、「发行NFT/MT」为 40 万能量值（等值人民币：0.1元），其他交易类型为 20 万能量值（等值人民币：0.05元）
+	fee, _ := types.ParseDecCoins("400000ugas") 
 	// 初始化 SDK 配置
 	options := []types.Option{
 		types.AlgoOption(algo),
