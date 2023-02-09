@@ -3,12 +3,14 @@ package sdk
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/client"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"github.com/irisnet/core-sdk-go/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"net/http"
+	"strings"
 )
 
 // NewClient create a new IRITA OPB client
@@ -25,7 +27,6 @@ func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) client.Client
 			for i := range certificateList {
 				roots.AddCert(certificateList[i])
 			}
-			//cert := credentials.NewClientTLSFromCert(roots, authToken.GetDomain())
 			cert := credentials.NewTLS(&tls.Config{ServerName: authToken.GetDomain(), RootCAs: roots, InsecureSkipVerify: true})
 			// overwrite grpcOpts
 			grpcOpts := []grpc.DialOption{
@@ -53,9 +54,9 @@ func NewClient(cfg types.ClientConfig, authToken *model.AuthToken) client.Client
 
 func getGateWayTlsCertPool(gateWayUrl string) ([]*x509.Certificate, error) {
 
-	/*if !strings.Contains(strings.ToLower(gateWayUrl), "https://") {
+	if !strings.Contains(strings.ToLower(gateWayUrl), "https://") {
 		return nil, errors.New("tls is enabled, but the address is http")
-	}*/
+	}
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}

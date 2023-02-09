@@ -34,10 +34,11 @@ import (
 
 // 测试链使用的配置
 var (
-	wsAddress   = ""
-	rpcAddress  = "http://testnet.bianjie.ai:26657"
-	grpcAddress = "testnet.bianjie.ai:9090"
-	chainID     = "testing"
+	wsAddress      = ""
+	rpcAddress     = "https://rpc.testnet.bianjie.ai"
+	grpcAddress    = "grpcs.testnet.bianjie.ai:443"
+	chainID        = "testing"
+	tlsServiceName = "grpcs.testnet.bianjie.ai"
 
 	algo             = "sm2"
 	projectId        = "TestProjectID"
@@ -70,9 +71,9 @@ func main() {
 
 	// 开启 TLS 连接
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
-	authToken.SetRequireTransportSecurity(false)
+	authToken.SetRequireTransportSecurity(true)
 	// 若开启 TLS 连接，此处可设置验证证书的主机名；默认 bsngate.com
-	authToken.SetDomain(grpcAddress)
+	authToken.SetDomain(tlsServiceName)
 	// 创建 OPB 客户端
 	client := opb.NewClient(cfg, &authToken)
 
