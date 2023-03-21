@@ -4,13 +4,15 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
+	"net/http"
+	"strings"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/client"
 	"github.com/bianjieai/opb-sdk-go/pkg/app/sdk/model"
 	"github.com/irisnet/core-sdk-go/types"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"net/http"
-	"strings"
 )
 
 // NewClient create a new IRITA OPB client
