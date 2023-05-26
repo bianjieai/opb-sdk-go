@@ -1,6 +1,7 @@
 package client
 
 import (
+	"github.com/bianjieai/iritamod-sdk-go/layer2"
 	"github.com/irisnet/core-sdk-go/bank"
 	"github.com/irisnet/core-sdk-go/client"
 	keys "github.com/irisnet/core-sdk-go/client"
@@ -38,6 +39,7 @@ type Client struct {
 
 	Identity identity.Client
 	Perm     perm.Client
+	Layer2   layer2.Client
 
 	Feegrant feegrant.Client
 	Key      keys.Client
@@ -58,6 +60,7 @@ func NewClient(cfg types.ClientConfig) Client {
 
 	idClient := identity.NewClient(baseClient, encodingConfig.Marshaler)
 	permClient := perm.NewClient(baseClient, encodingConfig.Marshaler)
+	layer2Client := layer2.NewClient(baseClient, encodingConfig.Marshaler)
 
 	feegrantClient := feegrant.NewClient(baseClient, encodingConfig.Marshaler)
 	keysClient := keys.NewKeysClient(cfg, baseClient)
@@ -76,6 +79,7 @@ func NewClient(cfg types.ClientConfig) Client {
 		MT:             mtClient,
 		Identity:       idClient,
 		Perm:           permClient,
+		Layer2:         layer2Client,
 		Feegrant:       feegrantClient,
 		Key:            keysClient,
 	}
@@ -90,6 +94,7 @@ func NewClient(cfg types.ClientConfig) Client {
 		mtClient,
 		idClient,
 		permClient,
+		layer2Client,
 		feegrantClient,
 	)
 	return *sdkClient

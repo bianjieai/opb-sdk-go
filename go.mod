@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
-	github.com/bianjieai/iritamod-sdk-go v0.0.0-20220708032705-9e8e301da3a8
+	github.com/bianjieai/iritamod-sdk-go v0.0.0-20230526172348-b7e022cb4f01
 	github.com/cosmos/cosmos-sdk v0.45.5 // indirect
 	github.com/irisnet/core-sdk-go v0.1.1-0.20230320094234-f12edcab435e
 	github.com/irisnet/irismod-sdk-go/mt v0.0.0-20221014104619-6f27c71cd5e4
