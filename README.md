@@ -69,7 +69,11 @@ func main() {
 
 	// 开启 TLS 连接
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
-	authToken.SetRequireTransportSecurity(false)
+	// 若开启 TLS 连接，则必须设置验证证书的主机名
+	if err :=  authToken.SetRequireTransportSecurity(false, ""); err != nil {
+		fmt.Println(fmt.Errorf("开启TLS失败: %s", err.Error()))
+		return
+    }
 	// 创建 OPB 客户端
 	client := opb.NewClient(cfg, &authToken)
 
@@ -195,28 +199,13 @@ func main() {
 	time.Sleep(time.Second * 20)
 }
 
-// 主网使用的配置
-//var (
-//	wsAddress   = fmt.Sprintf("%s/api/%s/ws", "wss://opbningxia.bsngate.com:18602", projectId)
-//	rpcAddress  = fmt.Sprintf("%s/api/%s/rpc", "https://opbningxia.bsngate.com:18602", projectId)
-//	grpcAddress = "opbningxia.bsngate.com:18603"
-//	chainID     = "wenchangchain"
-//
-//	algo             = ""
-//	projectId        = ""
-//	projectKey       = ""
-//	chainAccountAddr = ""
-//	name             = ""
-//	password         = ""
-//	mnemonic         = ""
-//)
-
 // 测试链使用的配置
 var (
 	wsAddress   = ""
 	rpcAddress  = "http://testnet.bianjie.ai:26657"
 	grpcAddress = "testnet.bianjie.ai:9090"
 	chainID     = "testing"
+	tlsServiceName = "grpcs.testnet.bianjie.ai"
 
 	algo             = "sm2"
 	projectId        = "TestProjectID"
