@@ -71,9 +71,11 @@ func main() {
 
 	// 开启 TLS 连接
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
-	authToken.SetRequireTransportSecurity(true)
-	// 若开启 TLS 连接，此处可设置验证证书的主机名；默认 bsngate.com
-	authToken.SetDomain(tlsServiceName)
+	// 若开启 TLS 连接，则必须设置验证证书的主机名；如测试环境可设置 grpcs.testnet.bianjie.ai
+	if err := authToken.SetRequireTransportSecurity(true, tlsServiceName); err != nil {
+		fmt.Println(fmt.Errorf("开启TLS失败: %s", err.Error()))
+		return
+	}
 	// 创建 OPB 客户端
 	client := opb.NewClient(cfg, &authToken)
 
