@@ -16,22 +16,6 @@ import (
 	tendermintTypes "github.com/tendermint/tendermint/abci/types"
 )
 
-// 主网使用的配置
-//var (
-//	wsAddress   = fmt.Sprintf("%s/api/%s/ws", "wss://opbningxia.bsngate.com:18602", projectId)
-//	rpcAddress  = fmt.Sprintf("%s/api/%s/rpc", "https://opbningxia.bsngate.com:18602", projectId)
-//	grpcAddress = "opbningxia.bsngate.com:18603"
-//	chainID     = "wenchangchain"
-//
-//	algo             = ""
-//	projectId        = ""
-//	projectKey       = ""
-//	chainAccountAddr = ""
-//	name             = ""
-//	password         = ""
-//	mnemonic         = ""
-//)
-
 // 测试链使用的配置
 var (
 	wsAddress      = ""
