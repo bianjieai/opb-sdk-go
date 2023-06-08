@@ -1,6 +1,7 @@
 package client
 
 import (
+	"github.com/bianjieai/iritamod-sdk-go/node"
 	"github.com/irisnet/core-sdk-go/bank"
 	"github.com/irisnet/core-sdk-go/client"
 	keys "github.com/irisnet/core-sdk-go/client"
@@ -35,6 +36,7 @@ type Client struct {
 	Random  random.Client
 	NFT     nft.Client
 	MT      mt.Client
+	Node    node.Client
 
 	Identity identity.Client
 	Perm     perm.Client
@@ -53,6 +55,7 @@ func NewClient(cfg types.ClientConfig) Client {
 	serviceClient := service.NewClient(baseClient, encodingConfig.Marshaler)
 	recordClient := record.NewClient(baseClient, encodingConfig.Marshaler)
 	nftClient := nft.NewClient(baseClient, encodingConfig.Marshaler)
+	nodeClient := node.NewClient(baseClient, encodingConfig.Marshaler)
 	randomClient := random.NewClient(baseClient, encodingConfig.Marshaler)
 	mtClient := mt.NewClient(baseClient, encodingConfig.Marshaler)
 
@@ -73,6 +76,7 @@ func NewClient(cfg types.ClientConfig) Client {
 		Record:         recordClient,
 		Random:         randomClient,
 		NFT:            nftClient,
+		Node:           nodeClient,
 		MT:             mtClient,
 		Identity:       idClient,
 		Perm:           permClient,
