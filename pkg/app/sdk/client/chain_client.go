@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/bianjieai/iritamod-sdk-go/layer2"
+	"github.com/bianjieai/iritamod-sdk-go/side-chain"
 	"github.com/irisnet/core-sdk-go/bank"
 	"github.com/irisnet/core-sdk-go/client"
 	keys "github.com/irisnet/core-sdk-go/client"
@@ -37,9 +37,9 @@ type Client struct {
 	NFT     nft.Client
 	MT      mt.Client
 
-	Identity identity.Client
-	Perm     perm.Client
-	Layer2   layer2.Client
+	Identity  identity.Client
+	Perm      perm.Client
+	SideChain side_chain.Client
 
 	Feegrant feegrant.Client
 	Key      keys.Client
@@ -60,7 +60,7 @@ func NewClient(cfg types.ClientConfig) Client {
 
 	idClient := identity.NewClient(baseClient, encodingConfig.Marshaler)
 	permClient := perm.NewClient(baseClient, encodingConfig.Marshaler)
-	layer2Client := layer2.NewClient(baseClient, encodingConfig.Marshaler)
+	sideChainClient := side_chain.NewClient(baseClient, encodingConfig.Marshaler)
 
 	feegrantClient := feegrant.NewClient(baseClient, encodingConfig.Marshaler)
 	keysClient := keys.NewKeysClient(cfg, baseClient)
@@ -79,7 +79,7 @@ func NewClient(cfg types.ClientConfig) Client {
 		MT:             mtClient,
 		Identity:       idClient,
 		Perm:           permClient,
-		Layer2:         layer2Client,
+		SideChain:      sideChainClient,
 		Feegrant:       feegrantClient,
 		Key:            keysClient,
 	}
@@ -94,7 +94,7 @@ func NewClient(cfg types.ClientConfig) Client {
 		mtClient,
 		idClient,
 		permClient,
-		layer2Client,
+		sideChainClient,
 		feegrantClient,
 	)
 	return *sdkClient
