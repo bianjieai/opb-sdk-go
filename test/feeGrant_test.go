@@ -44,8 +44,11 @@ func init() {
 	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
 	// 开启 TLS 连接
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
-	authToken.SetRequireTransportSecurity(false)
-
+	// 若开启 TLS 连接，则必须设置验证证书的主机名
+	if err := authToken.SetRequireTransportSecurity(false, ""); err != nil {
+		fmt.Println(fmt.Errorf("开启TLS失败: %s", err.Error()))
+		return
+	}
 	// 创建 OPB 客户端
 	txClient = opb.NewClient(cfg, &authToken)
 
