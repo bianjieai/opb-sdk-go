@@ -6,7 +6,7 @@ require (
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/bianjieai/iritamod-sdk-go v0.0.0-20230705054352-f98e8600702a
 	github.com/cosmos/cosmos-sdk v0.45.5 // indirect
-	github.com/irisnet/core-sdk-go v0.1.1-0.20230320094234-f12edcab435e
+	github.com/irisnet/core-sdk-go v0.2.0
 	github.com/irisnet/irismod-sdk-go/mt v0.0.0-20221014104619-6f27c71cd5e4
 	github.com/irisnet/irismod-sdk-go/nft v0.0.0-20221014104619-6f27c71cd5e4
 	github.com/irisnet/irismod-sdk-go/random v0.0.0-20221014104619-6f27c71cd5e4
