@@ -18,19 +18,17 @@ import (
 
 // 测试链使用的配置
 var (
-	wsAddress      = ""
+	wsAddress      = "wss://ws.testnet.bianjie.ai"
 	rpcAddress     = "https://rpc.testnet.bianjie.ai"
 	grpcAddress    = "grpcs.testnet.bianjie.ai:443"
 	chainID        = "testing"
 	tlsServiceName = "grpcs.testnet.bianjie.ai"
 
-	algo             = "sm2"
-	projectId        = "TestProjectID"
-	projectKey       = "TestProjectKey"
-	chainAccountAddr = "TestChainAccountAddress"
-	name             = "test_key_name"
-	password         = "test_password"
-	mnemonic         = "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic"
+	algo       = "sm2"
+	projectKey = "TestProjectKey"
+	name       = "test_key_name"
+	password   = "test_password"
+	mnemonic   = "supreme zero ladder chaos blur lake dinner warm rely voyage scan dilemma future spin victory glance legend faculty join man mansion water mansion exotic"
 )
 
 func main() {
@@ -47,16 +45,17 @@ func main() {
 	}
 	cfg, err := types.NewClientConfig(rpcAddress, grpcAddress, chainID, options...)
 	if err != nil {
-		panic(err)
+		fmt.Println(fmt.Errorf("初始化SDK失败: %s", err.Error()))
+		return
 	}
 
 	// 初始化 OPB 网关账号（测试网环境设置为 nil 即可）
-	authToken := model.NewAuthToken(projectId, projectKey, chainAccountAddr)
+	authToken := model.NewAuthToken(projectKey)
 
 	// 开启 TLS 连接
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
 	// 若开启 TLS 连接，则必须设置验证证书的主机名；如测试环境可设置 grpcs.testnet.bianjie.ai
-	if err := authToken.SetRequireTransportSecurity(true, tlsServiceName); err != nil {
+	if err = authToken.SetRequireTransportSecurity(true, tlsServiceName); err != nil {
 		fmt.Println(fmt.Errorf("开启TLS失败: %s", err.Error()))
 		return
 	}
