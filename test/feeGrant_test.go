@@ -41,7 +41,7 @@ func init() {
 		panic(err)
 	}
 	// 初始化 OPB 网关账号（测试网环境设置为 nil 即可）
-	authToken := model.NewAuthToken("TestProjectID", "TestProjectKey", "TestChainAccountAddress")
+	authToken := model.NewAuthToken("TestProjectKey")
 	// 开启 TLS 连接
 	// 若服务器要求使用安全链接，此处应设为true；若此处设为false可能导致请求出现长时间不响应的情况
 	// 若开启 TLS 连接，则必须设置验证证书的主机名
@@ -70,7 +70,7 @@ func init() {
 
 }
 
-//授权
+// 授权
 func TestGrantAllowance(t *testing.T) {
 	atom := types.NewCoins(types.NewInt64Coin("ugas", 55500000))
 	threeHours := time.Now().Add(3 * time.Hour)
@@ -94,7 +94,7 @@ func TestGrantAllowance(t *testing.T) {
 	require.NoError(t, err2)
 }
 
-//设置交易代扣
+// 设置交易代扣
 func TestFeeGrant(t *testing.T) {
 	testDenom := fmt.Sprintf("testdenom%d", rand.Int())
 	resultTx, err := txClient.NFT.IssueDenom(nft.IssueDenomRequest{
@@ -155,7 +155,7 @@ func TestFeeGrant(t *testing.T) {
 	require.Equal(t, originToken.Add(newTokenNum.Neg()), types.NewInt(feeNum))
 }
 
-//解除授权
+// 解除授权
 func TestRevokeAllowance(t *testing.T) {
 	result, err := txClient.Feegrant.RevokeAllowance(granter, grantee, baseTx)
 	require.NoError(t, err)

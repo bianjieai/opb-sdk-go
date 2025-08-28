@@ -6,25 +6,24 @@ import (
 )
 
 type AuthToken struct {
-	projectID        string
-	projectKey       string
-	chainAccountAddr string
-	enableTLS        bool
-	domain           string
+	projectKey string
+	enableTLS  bool
+	domain     string
 }
 
-func NewAuthToken(projectID, projectKey, chainAccountAddr string) AuthToken {
-	return AuthToken{projectID, projectKey, chainAccountAddr, true, ""}
+func NewAuthToken(projectKey string) AuthToken {
+	return AuthToken{
+		projectKey: projectKey,
+		enableTLS:  true,
+	}
 }
 
 func (a *AuthToken) GetRequestMetadata(context.Context, ...string) (
 	map[string]string, error,
 ) {
 	return map[string]string{
-		"projectIdHeader":           a.projectID,
-		"projectKeyHeader":          a.projectKey,
-		"chainAccountAddressHeader": a.chainAccountAddr,
-		"x-api-key":                 a.projectKey,
+		"projectKeyHeader": a.projectKey,
+		"x-api-key":        a.projectKey,
 	}, nil
 }
 
@@ -43,14 +42,6 @@ func (a *AuthToken) SetRequireTransportSecurity(enabled bool, domain string) err
 
 func (a *AuthToken) GetProjectKey() string {
 	return a.projectKey
-}
-
-func (a *AuthToken) GetProjectID() string {
-	return a.projectID
-}
-
-func (a *AuthToken) GetChainAccountAddr() string {
-	return a.chainAccountAddr
 }
 
 func (a *AuthToken) GetEnableTLS() bool {
